@@ -1,0 +1,46 @@
+[
+  {
+    "id": 100,
+    "name": "Org: Require signed commits",
+    "enforcement": "active",
+    "source_type": "Organization",
+    "target": "branch",
+    "conditions": {
+      "ref_name": {
+        "include": ["refs/heads/main", "refs/heads/release/*"],
+        "exclude": []
+      },
+      "repository_name": {
+        "include": ["compliance-app"],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "required_signatures"
+      }
+    ]
+  },
+  {
+    "id": 101,
+    "name": "Org: Enforce linear history",
+    "enforcement": "evaluate",
+    "source_type": "Organization",
+    "target": "branch",
+    "conditions": {
+      "ref_name": {
+        "include": ["refs/heads/main"],
+        "exclude": []
+      },
+      "repository_name": {
+        "include": ["~ALL"],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "required_linear_history"
+      }
+    ]
+  }
+]

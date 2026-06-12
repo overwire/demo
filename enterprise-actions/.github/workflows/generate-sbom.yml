@@ -1,0 +1,62 @@
+name: Supply Chain — SBOM
+
+on:
+  workflow_call:
+    inputs:
+      format:
+        description: SBOM output format (cyclonedx-json | spdx-json)
+        type: string
+        required: false
+        default: cyclonedx-json
+      working-directory:
+        type: string
+        required: false
+        default: '.'
+      artifact-name:
+        description: Name of the uploaded SBOM artifact
+        type: string
+        required: false
+        default: sbom
+      retention-days:
+        type: number
+        required: false
+        default: 30
+    outputs:
+      artifact-name:
+        value: ${{ jobs.sbom.outputs.artifact-name }}
+      sbom-path:
+        value: ${{ jobs.sbom.outputs.sbom-path }}
+      sbom-format:
+        value: ${{ inputs.format }}
+
+permissions:
+  contents: read
+
+jobs:
+  sbom:
+    name: SBOM
+    runs-on: ubuntu-latest
+    outputs:
+      artifact-name: ${{ inputs.artifact-name }}
+      sbom-path: ${{ steps.generate.outputs.path }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Generate SBOM
+        id: generate
+        uses: anchore/sbom-action@v0
+        with:
+          path: ${{ inputs.working-directory }}
+          format: ${{ inputs.format }}
+          artifact-name: ${{ inputs.artifact-name }}
+          output-file: ${{ inputs.artifact-name }}.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ${{ inputs.artifact-name }}.json
+          retention-days: ${{ inputs.retention-days }}
+          if-no-files-found: error

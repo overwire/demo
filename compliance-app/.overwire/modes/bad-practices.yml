@@ -1,0 +1,9 @@
+defaultMode: live
+jobs:
+  deprecated-commands: live
+steps:
+  deprecated-commands.0: live
+  deprecated-commands.1: live
+  deprecated-commands.2: live
+  deprecated-commands.3: live
+  deprecated-commands.4: live

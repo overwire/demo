@@ -1,0 +1,11 @@
+defaultMode: mock
+jobs:
+  integration: mock
+steps:
+  integration.0: mock
+  integration.1: mock
+  integration.2: mock
+  integration.3: mock
+  integration.4: mock
+  integration.5: mock
+  integration.6: mock

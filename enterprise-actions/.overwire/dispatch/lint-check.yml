@@ -1,0 +1,4 @@
+event: workflow_call
+inputs:
+  working-directory: .
+  node-version: "20"

@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    uses: acme-corp/enterprise-actions/.github/workflows/build-nodejs-npm.yml@main
+    with:
+      node-version: '20'
+
+  report:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Build summary
+        env:
+          PACKAGE_NAME: ${{ needs.build.outputs.package-name }}
+          PACKAGE_VERSION: ${{ needs.build.outputs.package-version }}
+          BUILD_STATUS: ${{ needs.build.outputs.build-status }}
+        run: |
+          echo "## Build Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Package | ${PACKAGE_NAME} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Version | ${PACKAGE_VERSION} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Status | ${BUILD_STATUS} |" >> "$GITHUB_STEP_SUMMARY"

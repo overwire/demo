@@ -1,0 +1,23 @@
+uses: actions/attest-build-provenance@v1
+description: |
+  Produces a SLSA build provenance attestation signed via the GitHub OIDC
+  issuer. In mock mode we return a deterministic attestation id and a
+  plausible bundle path; no OIDC token is minted and no sigstore call is made.
+inputs:
+  subject-path:
+    description: Path or glob of files to attest
+    required: true
+  subject-name:
+    description: Logical name for the attested subject
+    required: false
+  subject-digest:
+    description: Pre-computed digest for the subject (sha256:...)
+    required: false
+  push-to-registry:
+    description: When true, pushes the bundle to a sigstore registry
+    required: false
+    default: false
+outputs:
+  attestation-id: '12345678'
+  attestation-url: https://github.com/acme-corp/hello-node-app/attestations/12345678
+  bundle-path: /home/runner/_temp/attestations/12345678.intoto.jsonl

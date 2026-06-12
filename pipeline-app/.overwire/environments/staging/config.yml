@@ -1,0 +1,7 @@
+auto_approve: true
+variables:
+  DEPLOY_URL: https://staging.acme-corp.example.com
+  LOG_LEVEL: debug
+secrets:
+  NPM_TOKEN: mock
+  DEPLOY_KEY: mock

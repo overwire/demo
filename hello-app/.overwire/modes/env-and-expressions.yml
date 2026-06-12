@@ -1,0 +1,9 @@
+defaultMode: mock
+jobs:
+  expressions: mock
+steps:
+  expressions.0: mock
+  expressions.1: mock
+  expressions.2: mock
+  expressions.3: mock
+  expressions.4: mock

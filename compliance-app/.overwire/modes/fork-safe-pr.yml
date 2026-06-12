@@ -1,0 +1,9 @@
+defaultMode: live
+jobs:
+  check: live
+steps:
+  check.0: live
+  check.1: live
+  check.2: live
+  check.3: live
+  check.4: live

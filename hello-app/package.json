@@ -1,0 +1,22 @@
+{
+  "name": "@acme-corp/hello-app",
+  "version": "1.0.0",
+  "description": "Simple demo app for Overwire — reusable workflows and output chaining",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test src/greeter.test.js",
+    "lint": "node scripts/lint.js",
+    "build": "node scripts/build.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/acme-corp/hello-app.git"
+  },
+  "license": "Apache-2.0",
+  "author": "acme-corp Platform Team"
+}

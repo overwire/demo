@@ -1,0 +1,4 @@
+event: workflow_call
+inputs:
+  node-version: "20"
+  artifact-name: build-output

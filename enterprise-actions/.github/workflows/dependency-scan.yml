@@ -1,0 +1,90 @@
+name: Security — Dependency Audit
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        required: false
+        default: '20'
+      working-directory:
+        type: string
+        required: false
+        default: '.'
+      audit-level:
+        description: Minimum severity that fails the job (low | moderate | high | critical)
+        type: string
+        required: false
+        default: high
+      production-only:
+        description: When true, audits only production dependencies (--omit=dev)
+        type: boolean
+        required: false
+        default: true
+    outputs:
+      conclusion:
+        value: ${{ jobs.audit.outputs.conclusion }}
+      total-vulnerabilities:
+        value: ${{ jobs.audit.outputs.total }}
+      audit-level:
+        value: ${{ inputs.audit-level }}
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Audit
+    runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.report.outputs.conclusion }}
+      total: ${{ steps.report.outputs.total }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: npm ci --no-audit --no-fund
+
+      - name: Run npm audit
+        id: audit
+        working-directory: ${{ inputs.working-directory }}
+        continue-on-error: true
+        env:
+          AUDIT_LEVEL: ${{ inputs.audit-level }}
+          PRODUCTION_ONLY: ${{ inputs.production-only }}
+        run: |
+          flags="--audit-level=$AUDIT_LEVEL --json"
+          if [ "$PRODUCTION_ONLY" = "true" ]; then flags="$flags --omit=dev"; fi
+          # shellcheck disable=SC2086
+          npm audit $flags > audit.json || true
+
+      - name: Report
+        id: report
+        working-directory: ${{ inputs.working-directory }}
+        env:
+          AUDIT_OUTCOME: ${{ steps.audit.outcome }}
+          AUDIT_LEVEL: ${{ inputs.audit-level }}
+        run: |
+          if [ -f audit.json ]; then
+            total=$(node -e "const a=require('./audit.json');console.log((a.metadata&&a.metadata.vulnerabilities&&a.metadata.vulnerabilities.total)||0)")
+          else
+            total=0
+          fi
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+          if [ "$AUDIT_OUTCOME" = "success" ]; then
+            echo "conclusion=success" >> "$GITHUB_OUTPUT"
+          else
+            echo "conclusion=failure" >> "$GITHUB_OUTPUT"
+            echo "::error::npm audit found $total vulnerabilities at or above $AUDIT_LEVEL severity"
+            exit 1
+          fi

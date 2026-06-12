@@ -1,0 +1,17 @@
+{
+  "name": "@acme-corp/compliance-app",
+  "version": "3.0.0",
+  "description": "Governance and compliance showcase for Overwire",
+  "main": "src/core/index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/core/index.js",
+    "build": "node scripts/build.js",
+    "test": "node --test src/**/*.test.js",
+    "lint": "node scripts/lint.js"
+  },
+  "license": "MIT"
+}

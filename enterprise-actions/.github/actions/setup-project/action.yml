@@ -1,0 +1,45 @@
+name: Setup Project
+description: Sets up Node.js, restores npm cache, and installs dependencies.
+author: acme-corp Platform Team
+
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: '20'
+  working-directory:
+    description: Project root
+    required: false
+    default: '.'
+
+outputs:
+  cache-hit:
+    description: Whether the npm cache was restored
+    value: ${{ steps.cache.outputs.cache-hit }}
+  node-version:
+    description: Resolved Node.js version
+    value: ${{ steps.node.outputs.node-version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      id: node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+    - name: Restore npm cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: npm-${{ inputs.node-version }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) }}
+        restore-keys: npm-${{ inputs.node-version }}-
+
+    - name: Install dependencies
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npm ci --no-audit --no-fund

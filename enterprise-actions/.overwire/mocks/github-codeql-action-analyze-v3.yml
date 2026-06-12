@@ -1,0 +1,19 @@
+uses: github/codeql-action/analyze@v3
+description: |
+  Runs the CodeQL analysis and uploads SARIF results to GitHub Code Scanning.
+  In mock mode we return a plausible SARIF id and a synthetic result summary
+  so downstream steps can branch on the conclusion.
+inputs:
+  category:
+    description: SARIF run category (e.g. /language:javascript)
+    required: false
+  upload:
+    description: When true, uploads SARIF to Code Scanning
+    required: false
+    default: true
+  output:
+    description: Where to write SARIF output
+    required: false
+outputs:
+  sarif-id: '00000000-0000-4000-8000-000000000001'
+  sarif-output-path: /home/runner/work/_temp/codeql-results

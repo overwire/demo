@@ -1,0 +1,9 @@
+defaultMode: mock
+jobs:
+  discover:
+    steps:
+      actions/checkout@v4: mock
+  test:
+    steps:
+      actions/checkout@v4: mock
+      actions/setup-node@v4: mock

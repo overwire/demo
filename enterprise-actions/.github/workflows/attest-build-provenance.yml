@@ -1,0 +1,63 @@
+name: Supply Chain — Build Provenance Attestation
+
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: Name of the artifact (uploaded by an upstream job) to attest
+        type: string
+        required: true
+      subject-pattern:
+        description: Glob (relative to the downloaded artifact root) selecting files to attest
+        type: string
+        required: false
+        default: '*'
+      subject-name:
+        description: Logical name for the attested subject (defaults to file basename)
+        type: string
+        required: false
+        default: ''
+      push-to-registry:
+        description: When true, also push the attestation bundle to a sigstore registry
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      attestation-id:
+        value: ${{ jobs.attest.outputs.attestation-id }}
+      attestation-url:
+        value: ${{ jobs.attest.outputs.attestation-url }}
+      bundle-path:
+        value: ${{ jobs.attest.outputs.bundle-path }}
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  attest:
+    name: Attestation
+    runs-on: ubuntu-latest
+    outputs:
+      attestation-id: ${{ steps.attest.outputs.attestation-id }}
+      attestation-url: ${{ steps.attest.outputs.attestation-url }}
+      bundle-path: ${{ steps.attest.outputs.bundle-path }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact to attest
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: ./_attest-subject
+
+      - name: Attest build provenance
+        id: attest
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ./_attest-subject/${{ inputs.subject-pattern }}
+          subject-name: ${{ inputs.subject-name }}
+          push-to-registry: ${{ inputs.push-to-registry }}

@@ -1,0 +1,17 @@
+defaultMode: mock
+jobs:
+  lint: mock
+  build: mock
+  test: mock
+  summary: mock
+steps:
+  lint.0: mock
+  lint.1: mock
+  lint.2: mock
+  lint.3: mock
+  test.0: mock
+  test.1: mock
+  test.2: mock
+  test.3: mock
+  test.4: mock
+  summary.0: mock

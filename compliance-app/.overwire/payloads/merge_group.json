@@ -1,0 +1,16 @@
+{
+  "action": "checks_requested",
+  "merge_group": {
+    "head_sha": "abc1234567890abcdef1234567890abcdef123456",
+    "head_ref": "refs/heads/gh-readonly-queue/main/pr-10-abc1234",
+    "base_sha": "def4567890abcdef1234567890abcdef12345678",
+    "base_ref": "refs/heads/main"
+  },
+  "repository": {
+    "full_name": "acme-corp/compliance-app",
+    "default_branch": "main"
+  },
+  "sender": {
+    "login": "github-merge-queue[bot]"
+  }
+}

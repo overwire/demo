@@ -1,0 +1,12 @@
+defaultMode: mock
+jobs:
+  deploy: mock
+  rollback: mock
+steps:
+  deploy.0: mock
+  deploy.1: mock
+  deploy.2: mock
+  deploy.3: mock
+  rollback.0: mock
+  rollback.1: mock
+  rollback.2: mock

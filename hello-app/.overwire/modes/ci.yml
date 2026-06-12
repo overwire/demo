@@ -1,0 +1,6 @@
+defaultMode: live
+jobs:
+  build: live
+  report: live
+steps:
+  report.0: live

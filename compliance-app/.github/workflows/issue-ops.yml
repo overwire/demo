@@ -1,0 +1,95 @@
+name: IssueOps
+
+on:
+  issue_comment:
+    types: [created]
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  slash-command:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'issue_comment' &&
+      startsWith(github.event.comment.body, '/')
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse command
+        id: parse
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          COMMAND=$(echo "$COMMENT_BODY" | head -1 | awk '{print $1}')
+          ARGS=$(echo "$COMMENT_BODY" | head -1 | cut -d' ' -f2-)
+          echo "command=${COMMAND}" >> "$GITHUB_OUTPUT"
+          echo "args=${ARGS}" >> "$GITHUB_OUTPUT"
+          echo "Parsed: command=${COMMAND}, args=${ARGS}, author=${COMMENT_AUTHOR}, issue=#${ISSUE_NUMBER}"
+
+      - name: Handle approve-exception
+        if: steps.parse.outputs.command == '/approve-exception'
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          AUTHOR: ${{ github.event.comment.user.login }}
+          REPLY: ${{ format('Exception approved by @{0}. Compliance gate bypassed.', github.event.comment.user.login) }}
+        run: |
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/issues/${ISSUE_NUMBER}/labels" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -d '{"labels":["compliance-exception"]}'
+
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/issues/${ISSUE_NUMBER}/comments" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -d "{\"body\":\"${REPLY}\"}"
+
+      - name: Handle request-review
+        if: steps.parse.outputs.command == '/request-review'
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ARGS: ${{ steps.parse.outputs.args }}
+        run: |
+          echo "Requesting review from: ${ARGS}"
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/issues/${ISSUE_NUMBER}/comments" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -d "{\"body\":\"Review requested from ${ARGS}. Notifying team.\"}"
+
+  auto-triage:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues' && github.event.action == 'opened'
+    steps:
+      - name: Label by title pattern
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          LABEL=""
+          if echo "$ISSUE_TITLE" | grep -qi "^bug:"; then
+            LABEL="bug"
+          elif echo "$ISSUE_TITLE" | grep -qi "^feat:"; then
+            LABEL="enhancement"
+          elif echo "$ISSUE_TITLE" | grep -qi "^security:"; then
+            LABEL="security"
+          fi
+
+          if [ -n "$LABEL" ]; then
+            curl -s -X POST \
+              "${GITHUB_API}/repos/${REPO}/issues/${ISSUE_NUMBER}/labels" \
+              -H "Authorization: token ${GITHUB_TOKEN}" \
+              -d "{\"labels\":[\"${LABEL}\"]}"
+            echo "Applied label: ${LABEL}"
+          fi

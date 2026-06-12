@@ -1,0 +1,10 @@
+defaultMode: mock
+jobs:
+  audit: mock
+steps:
+  audit.0: mock
+  audit.1: mock
+  audit.2: mock
+  audit.3: mock
+  audit.4: mock
+  audit.5: mock

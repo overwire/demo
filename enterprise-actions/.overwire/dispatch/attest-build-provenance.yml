@@ -1,0 +1,6 @@
+event: workflow_call
+inputs:
+  artifact-name: test.txt
+  subject-pattern: "*"
+  subject-name: ""
+  push-to-registry: "false"

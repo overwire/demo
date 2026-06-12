@@ -1,0 +1,90 @@
+name: Build — Node.js (npm)
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node.js version to use
+        type: string
+        required: false
+        default: '20'
+      working-directory:
+        description: Working directory for npm commands
+        type: string
+        required: false
+        default: '.'
+      run-tests:
+        description: Run npm test after build
+        type: boolean
+        required: false
+        default: true
+    outputs:
+      build-status:
+        description: Final job status (success | failure | cancelled)
+        value: ${{ jobs.build.outputs.build-status }}
+      build-sha:
+        description: Commit SHA the build ran against
+        value: ${{ jobs.build.outputs.build-sha }}
+      package-name:
+        description: name field from package.json
+        value: ${{ jobs.build.outputs.package-name }}
+      package-version:
+        description: version field from package.json
+        value: ${{ jobs.build.outputs.package-version }}
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    outputs:
+      build-status: ${{ steps.status.outputs.value }}
+      build-sha: ${{ steps.status.outputs.sha }}
+      package-name: ${{ steps.metadata.outputs.name }}
+      package-version: ${{ steps.metadata.outputs.version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: npm ci --no-audit --no-fund
+
+      - name: Lint
+        working-directory: ${{ inputs.working-directory }}
+        continue-on-error: true
+        run: npm run lint --if-present
+
+      - name: Build
+        working-directory: ${{ inputs.working-directory }}
+        run: npm run build --if-present
+
+      - name: Test
+        if: ${{ inputs.run-tests }}
+        working-directory: ${{ inputs.working-directory }}
+        run: npm test
+
+      - name: Read package metadata
+        id: metadata
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Capture status
+        id: status
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "value=$JOB_STATUS" >> "$GITHUB_OUTPUT"
+          echo "sha=$GITHUB_SHA" >> "$GITHUB_OUTPUT"

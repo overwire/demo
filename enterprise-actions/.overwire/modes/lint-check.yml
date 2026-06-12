@@ -1,0 +1,9 @@
+defaultMode: live
+jobs:
+  lint: live
+steps:
+  lint.0: live
+  lint.1: live
+  lint.2: live
+  lint.3: live
+  lint.4: live

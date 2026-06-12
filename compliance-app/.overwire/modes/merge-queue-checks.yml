@@ -1,0 +1,8 @@
+defaultMode: mock
+jobs:
+  build: mock
+  security: mock
+  gate: mock
+steps:
+  gate.0: mock
+  gate.1: mock

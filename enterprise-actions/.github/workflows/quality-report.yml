@@ -1,0 +1,103 @@
+name: Quality Report
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Project root
+        type: string
+        required: false
+        default: '.'
+      fail-on-warning:
+        description: Fail the job if warnings are found
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      conclusion:
+        description: Overall quality conclusion
+        value: ${{ jobs.report.outputs.conclusion }}
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.evaluate.outputs.conclusion }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint check
+        id: lint
+        continue-on-error: true
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          echo "::group::Lint Results"
+          echo "Running lint checks..."
+          echo "src/auth.ts: line 42 — unused variable 'tempToken'"
+          echo "src/api.ts: line 108 — missing return type"
+          echo "::endgroup::"
+
+          echo "::warning file=src/auth.ts,line=42,col=7::Unused variable 'tempToken' — consider removing or prefixing with underscore"
+          echo "::warning file=src/api.ts,line=108::Missing explicit return type on exported function"
+
+      - name: Security scan
+        id: security
+        continue-on-error: true
+        working-directory: ${{ inputs.working-directory }}
+        run: |
+          echo "::group::Security Scan"
+          echo "Scanning dependencies for known vulnerabilities..."
+          echo "::endgroup::"
+
+          echo "::error file=package.json,line=15::Critical vulnerability in lodash@4.17.20 — upgrade to 4.17.21"
+          echo "::notice title=Security::No high-severity issues in application code"
+
+      - name: Mask sensitive values
+        run: |
+          echo "::add-mask::sk-secret-api-key-12345"
+          echo "API key (should be masked): sk-secret-api-key-12345"
+
+      - name: Evaluate results
+        id: evaluate
+        env:
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          SECURITY_OUTCOME: ${{ steps.security.outcome }}
+          FAIL_ON_WARNING: ${{ inputs.fail-on-warning }}
+        run: |
+          echo "::group::Evaluation"
+          echo "Lint: ${LINT_OUTCOME}"
+          echo "Security: ${SECURITY_OUTCOME}"
+          echo "::endgroup::"
+
+          if [ "${SECURITY_OUTCOME}" = "failure" ]; then
+            echo "::error::Security scan found critical issues"
+            echo "conclusion=failure" >> "$GITHUB_OUTPUT"
+          elif [ "${FAIL_ON_WARNING}" = "true" ] && [ "${LINT_OUTCOME}" = "failure" ]; then
+            echo "::error::Lint warnings treated as errors (fail-on-warning enabled)"
+            echo "conclusion=failure" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice title=Quality Gate::All checks acceptable"
+            echo "conclusion=success" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Quality summary
+        env:
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          SECURITY_OUTCOME: ${{ steps.security.outcome }}
+          CONCLUSION: ${{ steps.evaluate.outputs.conclusion }}
+        run: |
+          echo "## Quality Report" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Check | Result |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|--------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Lint | ${LINT_OUTCOME} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Security | ${SECURITY_OUTCOME} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Annotations" >> "$GITHUB_STEP_SUMMARY"
+          echo "- [x] \`::warning::\` — lint issues with file/line" >> "$GITHUB_STEP_SUMMARY"
+          echo "- [x] \`::error::\` — security vulnerability with file/line" >> "$GITHUB_STEP_SUMMARY"
+          echo "- [x] \`::notice::\` — informational status" >> "$GITHUB_STEP_SUMMARY"
+          echo "- [x] \`::group::\` — collapsible log sections" >> "$GITHUB_STEP_SUMMARY"
+          echo "- [x] \`::add-mask::\` — value redaction" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Conclusion:** ${CONCLUSION}" >> "$GITHUB_STEP_SUMMARY"

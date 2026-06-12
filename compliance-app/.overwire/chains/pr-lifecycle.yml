@@ -1,0 +1,9 @@
+name: PR Lifecycle
+runs:
+  - id: ci
+    workflow: ci.yml
+    event: pull_request
+  - id: compliance
+    workflow: compliance-gate.yml
+    event: workflow_run
+    continueOnError: true

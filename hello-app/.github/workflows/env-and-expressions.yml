@@ -1,0 +1,61 @@
+name: Expression & Environment Demo
+
+on:
+  workflow_dispatch:
+
+env:
+  APP_NAME: hello-app
+
+jobs:
+  expressions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set environment variables
+        run: |
+          echo "BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          echo "BUILD_HOST=$(hostname)" >> "$GITHUB_ENV"
+
+      - name: Verify GITHUB_ENV propagation
+        env:
+          APP_LABEL: ${{ format('{0}-{1}', env.APP_NAME, github.run_number) }}
+          FILE_HASH: ${{ hashFiles('package-lock.json') }}
+          IS_MAIN: ${{ startsWith(github.ref, 'refs/heads/main') }}
+          HAS_MAIN: ${{ contains(github.ref, 'main') }}
+          REF_END: ${{ endsWith(github.ref, 'main') }}
+        run: |
+          echo "BUILD_TIME from GITHUB_ENV: $BUILD_TIME"
+          echo "BUILD_HOST from GITHUB_ENV: $BUILD_HOST"
+          echo "APP_LABEL: $APP_LABEL"
+          echo "FILE_HASH: $FILE_HASH"
+          echo "IS_MAIN: $IS_MAIN"
+          echo "HAS_MAIN: $HAS_MAIN"
+          echo "REF_END: $REF_END"
+
+      - name: Prepend to PATH
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo '#!/bin/sh' > "$HOME/.local/bin/hello-tool"
+          echo 'echo "hello-tool: ok"' >> "$HOME/.local/bin/hello-tool"
+          chmod +x "$HOME/.local/bin/hello-tool"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Verify GITHUB_PATH propagation
+        run: |
+          echo "PATH includes custom dir: $PATH"
+          hello-tool
+
+      - name: Expression summary
+        env:
+          ALL_FUNCTIONS: ${{ join(fromJSON('["contains","startsWith","endsWith","format","join","toJSON","hashFiles"]'), ' | ') }}
+          RUN_CONTEXT: ${{ toJSON(github.run_id) }}
+        run: |
+          echo "## Expression & Environment Demo" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### GITHUB_ENV Propagation" >> "$GITHUB_STEP_SUMMARY"
+          echo "- BUILD_TIME: ${BUILD_TIME}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- BUILD_HOST: ${BUILD_HOST}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Expression Functions Tested" >> "$GITHUB_STEP_SUMMARY"
+          echo "${ALL_FUNCTIONS}" >> "$GITHUB_STEP_SUMMARY"

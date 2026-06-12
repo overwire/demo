@@ -1,0 +1,7 @@
+defaultMode: mock
+jobs:
+  sbom: mock
+steps:
+  sbom.0: live
+  sbom.1: mock
+  sbom.2: live

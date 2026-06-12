@@ -1,0 +1,62 @@
+name: Merge Queue Checks
+
+on:
+  merge_group:
+    types: [checks_requested]
+
+permissions:
+  contents: read
+  checks: write
+  statuses: write
+
+jobs:
+  build:
+    uses: acme-corp/enterprise-actions/.github/workflows/build-nodejs-npm.yml@main
+    with:
+      node-version: '20'
+    secrets: inherit
+
+  security:
+    needs: build
+    uses: acme-corp/enterprise-actions/.github/workflows/codeql-scan.yml@main
+
+  gate:
+    runs-on: ubuntu-latest
+    needs: [build, security]
+    steps:
+      - name: Check merge readiness
+        env:
+          BUILD_STATUS: ${{ needs.build.outputs.build-status }}
+          SECURITY_CONCLUSION: ${{ needs.security.outputs.conclusion }}
+          HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+          BASE_REF: ${{ github.event.merge_group.base_ref }}
+        run: |
+          echo "::notice title=Merge Queue::Validating merge group for ${HEAD_SHA} into ${BASE_REF}"
+
+          READY=true
+          if [ "${BUILD_STATUS}" != "success" ]; then
+            echo "::error::Build failed: ${BUILD_STATUS}"
+            READY=false
+          fi
+          if [ "${SECURITY_CONCLUSION}" != "success" ]; then
+            echo "::error::Security scan failed: ${SECURITY_CONCLUSION}"
+            READY=false
+          fi
+
+          if [ "${READY}" = "true" ]; then
+            echo "::notice title=Merge Queue::All checks passed — ready to merge"
+          else
+            echo "::error::Merge blocked — required checks failed"
+            exit 1
+          fi
+
+      - name: Queue summary
+        env:
+          HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+          BASE_REF: ${{ github.event.merge_group.base_ref }}
+        run: |
+          echo "## Merge Queue Gate" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Head SHA:** \`${HEAD_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Base ref:** ${BASE_REF}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Result:** Passed" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,6 @@
+event: workflow_call
+inputs:
+  format: cyclonedx-json
+  working-directory: .
+  artifact-name: sbom
+  retention-days: "30"

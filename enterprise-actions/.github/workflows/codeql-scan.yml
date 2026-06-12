@@ -1,0 +1,57 @@
+name: Security — CodeQL
+
+on:
+  workflow_call:
+    inputs:
+      languages:
+        description: Comma-separated CodeQL languages
+        type: string
+        required: false
+        default: javascript
+      working-directory:
+        description: Source directory to analyze
+        type: string
+        required: false
+        default: '.'
+    outputs:
+      conclusion:
+        description: Final scan conclusion
+        value: ${{ jobs.codeql.outputs.conclusion }}
+      sarif-id:
+        description: SARIF upload id reported by github/codeql-action/analyze
+        value: ${{ jobs.codeql.outputs.sarif-id }}
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.summary.outputs.conclusion }}
+      sarif-id: ${{ steps.analyze.outputs.sarif-id }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ inputs.languages }}
+
+      - name: Analyze
+        id: analyze
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: /language:${{ inputs.languages }}
+
+      - name: Summarize
+        id: summary
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: echo "conclusion=$JOB_STATUS" >> "$GITHUB_OUTPUT"

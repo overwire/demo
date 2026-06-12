@@ -1,0 +1,7 @@
+defaultMode: live
+jobs:
+  deploy: live
+steps:
+  deploy.0: live
+  deploy.1: live
+  deploy.2: live

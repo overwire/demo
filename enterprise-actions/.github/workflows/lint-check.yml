@@ -1,0 +1,57 @@
+name: Quality — Lint Check
+
+on:
+  workflow_call:
+    inputs:
+      working-directory:
+        description: Directory to lint
+        type: string
+        required: false
+        default: '.'
+      node-version:
+        description: Node.js version for linting
+        type: string
+        required: false
+        default: '20'
+    outputs:
+      conclusion:
+        description: Lint result (success | failure)
+        value: ${{ jobs.lint.outputs.conclusion }}
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.result.outputs.conclusion }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: npm
+          cache-dependency-path: ${{ inputs.working-directory }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ inputs.working-directory }}
+        run: npm ci --no-audit --no-fund
+
+      - name: Run lint
+        id: lint
+        working-directory: ${{ inputs.working-directory }}
+        continue-on-error: true
+        run: npm run lint
+
+      - name: Capture result
+        id: result
+        env:
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+        run: |
+          echo "conclusion=$LINT_OUTCOME" >> "$GITHUB_OUTPUT"

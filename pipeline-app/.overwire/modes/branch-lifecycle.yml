@@ -1,0 +1,9 @@
+defaultMode: mock
+jobs:
+  setup-preview: mock
+  teardown-preview: mock
+steps:
+  setup-preview.0: mock
+  setup-preview.1: mock
+  teardown-preview.0: mock
+  teardown-preview.1: mock

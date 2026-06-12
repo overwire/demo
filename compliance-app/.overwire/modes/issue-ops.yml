@@ -1,0 +1,10 @@
+defaultMode: mock
+jobs:
+  slash-command: mock
+  auto-triage: mock
+steps:
+  slash-command.0: mock
+  slash-command.1: mock
+  slash-command.2: mock
+  slash-command.3: mock
+  auto-triage.0: mock

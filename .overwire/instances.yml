@@ -1,0 +1,8 @@
+- fullName: wire-corp/compliance-app
+  relativePath: compliance-app
+- fullName: acme-corp/enterprise-actions
+  relativePath: enterprise-actions
+- fullName: acme-corp/hello-app
+  relativePath: hello-app
+- fullName: acme-corp/pipeline-app
+  relativePath: pipeline-app

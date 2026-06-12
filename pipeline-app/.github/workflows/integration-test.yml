@@ -1,0 +1,81 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'tests/integration/**'
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20-bookworm
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: acme_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure database URL
+        env:
+          DB_PASS: ${{ secrets.DB_PASSWORD }}
+        run: |
+          echo "DATABASE_URL=postgresql://test:${DB_PASS}@postgres:5432/acme_test" >> "$GITHUB_ENV"
+          echo "REDIS_URL=redis://redis:6379" >> "$GITHUB_ENV"
+
+      - name: Add project tools to PATH
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          echo '#!/bin/sh' > "$HOME/.local/bin/acme-migrate"
+          echo 'echo "acme-migrate: $@"' >> "$HOME/.local/bin/acme-migrate"
+          chmod +x "$HOME/.local/bin/acme-migrate"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run migrations
+        run: |
+          echo "Connecting to $DATABASE_URL"
+          acme-migrate up
+
+      - name: Integration tests
+        timeout-minutes: 15
+        env:
+          NODE_ENV: test
+          CI: 'true'
+        run: npm test -- --integration
+
+      - name: Test summary
+        if: always()
+        run: |
+          echo "## Integration Test Results" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Service | Image | Port |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---------|-------|------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| PostgreSQL | postgres:16 | 5432 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Redis | redis:7-alpine | 6379 |" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Container: \`node:20-bookworm\`" >> "$GITHUB_STEP_SUMMARY"

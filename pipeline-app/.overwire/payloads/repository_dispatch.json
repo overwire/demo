@@ -1,0 +1,16 @@
+{
+  "action": "deploy-request",
+  "client_payload": {
+    "version": "2.1.0",
+    "environment": "staging",
+    "requester": "ops-dashboard",
+    "reason": "Scheduled release deployment"
+  },
+  "repository": {
+    "full_name": "acme-corp/pipeline-app",
+    "default_branch": "main"
+  },
+  "sender": {
+    "login": "deploy-bot"
+  }
+}

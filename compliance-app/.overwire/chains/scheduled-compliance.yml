@@ -1,0 +1,5 @@
+name: Scheduled Compliance
+description: Weekly audit and compliance gate
+runs:
+  - workflow: scheduled-audit
+    event: schedule

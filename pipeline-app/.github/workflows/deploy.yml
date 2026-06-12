@@ -1,0 +1,110 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to deploy
+        required: true
+        type: string
+      environment:
+        description: Target environment
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+          - canary
+      dry-run:
+        description: Simulate without deploying
+        required: false
+        type: boolean
+        default: true
+
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    outputs:
+      should-deploy: ${{ steps.decide.outputs.should-deploy }}
+      environment: ${{ steps.decide.outputs.environment }}
+      version: ${{ steps.decide.outputs.version }}
+    steps:
+      - name: Evaluate trigger
+        id: decide
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_ENVIRONMENT: ${{ inputs.environment }}
+          INPUT_DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          if [ "${EVENT_NAME}" = "workflow_dispatch" ]; then
+            echo "should-deploy=true" >> "$GITHUB_OUTPUT"
+            echo "environment=${INPUT_ENVIRONMENT}" >> "$GITHUB_OUTPUT"
+            echo "version=${INPUT_VERSION}" >> "$GITHUB_OUTPUT"
+          elif [ "${EVENT_NAME}" = "workflow_run" ] && [ "${WR_CONCLUSION}" = "success" ]; then
+            echo "should-deploy=true" >> "$GITHUB_OUTPUT"
+            echo "environment=staging" >> "$GITHUB_OUTPUT"
+            echo "version=auto" >> "$GITHUB_OUTPUT"
+          else
+            echo "should-deploy=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: gate
+    if: needs.gate.outputs.should-deploy == 'true'
+    environment:
+      name: ${{ needs.gate.outputs.environment }}
+      url: https://${{ needs.gate.outputs.environment }}.acme-corp.example.com
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy
+        env:
+          TARGET_ENV: ${{ needs.gate.outputs.environment }}
+          VERSION: ${{ needs.gate.outputs.version }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          echo "Deploying version ${VERSION} to ${TARGET_ENV}"
+          echo "deploy-url=https://${TARGET_ENV}.acme-corp.example.com" >> "$GITHUB_OUTPUT"
+
+  notify:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: deploy
+    steps:
+      - name: Post commit status
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+        run: |
+          STATE="success"
+          if [ "${DEPLOY_RESULT}" != "success" ]; then
+            STATE="failure"
+          fi
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/statuses/${SHA}" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"state\":\"${STATE}\",\"context\":\"deploy\",\"description\":\"Deploy ${DEPLOY_RESULT}\"}"
+      - name: Post issue comment
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          DEPLOY_ENV: ${{ needs.gate.outputs.environment }}
+          DEPLOY_VERSION: ${{ needs.gate.outputs.version }}
+        run: |
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/issues/1/comments" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"body\":\"Deploy ${DEPLOY_VERSION} to ${DEPLOY_ENV}: ${DEPLOY_RESULT}\"}"

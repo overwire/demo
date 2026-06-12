@@ -1,0 +1,71 @@
+name: Scheduled Security Audit
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+    working-directory: .
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    outputs:
+      conclusion: ${{ steps.scan.outputs.conclusion }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run dependency audit
+        id: scan
+        continue-on-error: true
+        run: |
+          npm audit --json > audit-report.json 2>&1 || true
+          VULN_COUNT=$(node -e "const r=require('./audit-report.json'); console.log(r.metadata?.vulnerabilities?.total || 0)" 2>/dev/null || echo 0)
+          echo "vuln-count=${VULN_COUNT}" >> "$GITHUB_OUTPUT"
+          if [ "$VULN_COUNT" -gt 0 ]; then
+            echo "conclusion=failure" >> "$GITHUB_OUTPUT"
+          else
+            echo "conclusion=success" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate compliance report
+        shell: python
+        env:
+          SCHEDULE: ${{ github.event.schedule || 'manual' }}
+          VULN_COUNT: ${{ steps.scan.outputs.vuln-count }}
+        run: |
+          import json, os
+          schedule = os.environ["SCHEDULE"]
+          vuln_count = os.environ.get("VULN_COUNT", "0")
+          report = {
+              "trigger": schedule,
+              "vulnerabilities": int(vuln_count),
+              "status": "pass" if int(vuln_count) == 0 else "fail"
+          }
+          print(json.dumps(report, indent=2))
+
+      - name: Audit summary
+        env:
+          SCAN_RESULT: ${{ toJSON(steps.scan.outputs) }}
+          TRIGGER: ${{ github.event.schedule || 'manual dispatch' }}
+          FUNCTIONS_USED: ${{ join(fromJSON('["toJSON","join","fromJSON"]'), ', ') }}
+        run: |
+          echo "## Weekly Security Audit" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Schedule:** \`${TRIGGER}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Scan outputs:** \`${SCAN_RESULT}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Expression functions used:** ${FUNCTIONS_USED}" >> "$GITHUB_STEP_SUMMARY"

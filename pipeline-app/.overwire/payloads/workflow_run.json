@@ -1,0 +1,26 @@
+{
+  "action": "completed",
+  "workflow_run": {
+    "id": 1001,
+    "name": "CI",
+    "head_branch": "main",
+    "head_sha": "def4567890abcdef1234567890abcdef12345678",
+    "status": "completed",
+    "conclusion": "success",
+    "event": "push",
+    "workflow_id": 100,
+    "run_number": 42
+  },
+  "workflow": {
+    "id": 100,
+    "name": "CI",
+    "path": ".github/workflows/ci.yml"
+  },
+  "repository": {
+    "full_name": "acme-corp/pipeline-app",
+    "default_branch": "main"
+  },
+  "sender": {
+    "login": "developer"
+  }
+}

@@ -1,0 +1,29 @@
+name: Bad Practices (Lint Demo)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deprecated-commands:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Use deprecated set-output
+        id: old-output
+        run: |
+          echo "::set-output name=result::some-value"
+
+      - name: Use deprecated set-env
+        id: old-env
+        run: |
+          echo "::set-env name=MY_VAR::some-value"
+
+      - name: Duplicate step ID
+        id: old-output
+        run: echo "This step has a duplicate ID"
+
+      - name: Read outputs
+        env:
+          RESULT: ${{ steps.old-output.outputs.result }}
+        run: echo "Result: ${RESULT}"

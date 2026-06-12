@@ -1,0 +1,9 @@
+defaultMode: mock
+jobs:
+  report: mock
+steps:
+  report.0: mock
+  report.1: mock
+  report.2: mock
+  report.3: mock
+  report.4: mock

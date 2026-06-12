@@ -1,0 +1,9 @@
+defaultMode: mock
+jobs:
+  test: mock
+steps:
+  test.0: live
+  test.1: live
+  test.2: mock
+  test.3: live
+  test.4: live

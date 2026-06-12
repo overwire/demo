@@ -1,0 +1,7 @@
+uses: acme-corp/enterprise-actions/.github/actions/setup-project@main
+inputs:
+  node-version: '20'
+  working-directory: '.'
+outputs:
+  cache-hit: 'true'
+  node-version: '20.18.0'

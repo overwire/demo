@@ -1,0 +1,5 @@
+event: workflow_call
+inputs:
+  node-version: "20"
+  working-directory: .
+  run-tests: "true"

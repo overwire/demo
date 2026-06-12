@@ -1,0 +1,53 @@
+name: Branch Lifecycle
+
+on:
+  create:
+  delete:
+
+jobs:
+  setup-preview:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'create' && github.event.ref_type == 'branch'
+    steps:
+      - name: Create preview environment
+        env:
+          BRANCH: ${{ github.event.ref }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          SLUG=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+          echo "Creating preview for branch: ${BRANCH}"
+          echo "Environment slug: ${SLUG}"
+          echo "Initiated by: ${ACTOR}"
+
+      - name: Notify
+        env:
+          BRANCH: ${{ github.event.ref }}
+        run: |
+          echo "## Preview Environment Created" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Branch:** ${BRANCH}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **URL:** https://preview-${BRANCH}.acme-corp.dev" >> "$GITHUB_STEP_SUMMARY"
+
+  teardown-preview:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'delete' &&
+      github.event.ref_type == 'branch' &&
+      !endsWith(github.event.ref, '/main')
+    steps:
+      - name: Destroy preview environment
+        env:
+          BRANCH: ${{ github.event.ref }}
+        run: |
+          SLUG=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+          echo "Tearing down preview for deleted branch: ${BRANCH}"
+          echo "Environment slug: ${SLUG}"
+
+      - name: Cleanup summary
+        env:
+          BRANCH: ${{ github.event.ref }}
+        run: |
+          echo "## Preview Environment Destroyed" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Branch:** ${BRANCH}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Status:** Cleaned up" >> "$GITHUB_STEP_SUMMARY"

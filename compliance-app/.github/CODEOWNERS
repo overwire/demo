@@ -1,0 +1,7 @@
+*              @acme-corp/platform
+/src/core/     @acme-corp/platform
+/src/api/      @acme-corp/backend
+/docs/         @acme-corp/docs
+/scripts/      @acme-corp/devex
+/.github/      @acme-corp/platform @acme-corp/devex
+/.overwire/    @acme-corp/devex

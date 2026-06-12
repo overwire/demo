@@ -1,0 +1,64 @@
+name: Deploy — Preview
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: Target environment name
+        type: string
+        required: true
+      version:
+        description: Version identifier to deploy
+        type: string
+        required: true
+      dry-run:
+        description: Skip actual deployment when true
+        type: boolean
+        required: false
+        default: false
+    outputs:
+      deploy-url:
+        description: URL of the deployed preview
+        value: ${{ jobs.deploy.outputs.deploy-url }}
+      deploy-status:
+        description: Deployment outcome
+        value: ${{ jobs.deploy.outputs.deploy-status }}
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    outputs:
+      deploy-url: ${{ steps.deploy.outputs.url }}
+      deploy-status: ${{ steps.status.outputs.value }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        id: deploy
+        env:
+          ENVIRONMENT: ${{ inputs.environment }}
+          VERSION: ${{ inputs.version }}
+          DRY_RUN: ${{ inputs.dry-run }}
+        run: |
+          url="https://preview-${VERSION}.example.com"
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "DRY RUN — would deploy $VERSION to $ENVIRONMENT"
+          else
+            echo "Deploying $VERSION to $ENVIRONMENT"
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Capture status
+        id: status
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          echo "value=$JOB_STATUS" >> "$GITHUB_OUTPUT"

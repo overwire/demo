@@ -1,0 +1,5 @@
+event: workflow_dispatch
+inputs:
+  version: 1.0.0
+  environment: production
+  dry-run: "true"

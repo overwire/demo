@@ -1,0 +1,6 @@
+event: workflow_call
+inputs:
+  node-version: "20"
+  working-directory: .
+  audit-level: high
+  production-only: "true"

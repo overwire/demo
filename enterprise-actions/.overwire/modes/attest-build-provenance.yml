@@ -1,0 +1,7 @@
+defaultMode: mock
+jobs:
+  attest: mock
+steps:
+  attest.0: mock
+  attest.1: mock
+  attest.2: mock

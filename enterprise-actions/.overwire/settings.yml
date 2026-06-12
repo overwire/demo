@@ -1,0 +1,3 @@
+owner: acme-corp
+logs:
+  plaintextSecrets: false

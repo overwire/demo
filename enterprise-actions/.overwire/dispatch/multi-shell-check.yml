@@ -1,0 +1,3 @@
+event: workflow_call
+inputs:
+  checks: '["bash","python","node","pwsh"]'

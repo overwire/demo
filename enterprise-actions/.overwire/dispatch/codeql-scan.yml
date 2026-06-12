@@ -1,0 +1,4 @@
+event: workflow_call
+inputs:
+  languages: javascript
+  working-directory: .

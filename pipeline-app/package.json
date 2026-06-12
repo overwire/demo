@@ -1,0 +1,17 @@
+{
+  "name": "@acme-corp/pipeline-app",
+  "version": "2.0.0",
+  "description": "Pipeline CI/CD showcase for Overwire",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "build": "node scripts/build.js",
+    "test": "node --test src/*.test.js lib/*.test.js",
+    "lint": "node scripts/lint.js"
+  },
+  "license": "MIT"
+}

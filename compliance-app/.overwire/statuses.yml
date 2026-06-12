@@ -1,0 +1,67 @@
+# Pre-staged check run conclusions per PR
+# PR #10: all pass -> compliance PASS (with review)
+# PR #11: all pass -> compliance FAIL (missing review)
+# PR #12: Security fails -> compliance FAIL (check failure)
+
+checks:
+  # PR #10 checks (all pass)
+  - sha: ccc3333333333333333333333333333333333333
+    pr: 10
+    name: Build
+    status: completed
+    conclusion: success
+  - sha: ccc3333333333333333333333333333333333333
+    pr: 10
+    name: Security
+    status: completed
+    conclusion: success
+  - sha: ccc3333333333333333333333333333333333333
+    pr: 10
+    name: Audit
+    status: completed
+    conclusion: success
+
+  # PR #11 checks (all pass, but no review)
+  - sha: eee5555555555555555555555555555555555555
+    pr: 11
+    name: Build
+    status: completed
+    conclusion: success
+  - sha: eee5555555555555555555555555555555555555
+    pr: 11
+    name: Security
+    status: completed
+    conclusion: success
+  - sha: eee5555555555555555555555555555555555555
+    pr: 11
+    name: Audit
+    status: completed
+    conclusion: success
+
+  # PR #12 checks (Security fails)
+  - sha: fff6666666666666666666666666666666666666
+    pr: 12
+    name: Build
+    status: completed
+    conclusion: success
+  - sha: fff6666666666666666666666666666666666666
+    pr: 12
+    name: Security
+    status: completed
+    conclusion: failure
+  - sha: fff6666666666666666666666666666666666666
+    pr: 12
+    name: Audit
+    status: completed
+    conclusion: success
+
+statuses:
+  - pr: 10
+    context: external/ci-lint
+    state: success
+  - pr: 11
+    context: external/ci-lint
+    state: success
+  - pr: 12
+    context: external/ci-lint
+    state: success

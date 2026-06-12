@@ -1,0 +1,10 @@
+defaultMode: mock
+jobs:
+  build: live
+  security: live
+  audit: skip
+  post-checks: mock
+steps:
+  post-checks.0: mock
+  post-checks.1: mock
+  post-checks.2: mock

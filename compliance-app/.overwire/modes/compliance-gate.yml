@@ -1,0 +1,9 @@
+defaultMode: mock
+jobs:
+  evaluate: mock
+steps:
+  evaluate.0: live
+  evaluate.1: live
+  evaluate.2: live
+  evaluate.3: live
+  evaluate.4: live

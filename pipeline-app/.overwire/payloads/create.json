@@ -1,0 +1,14 @@
+{
+  "ref": "feat/preview-environments",
+  "ref_type": "branch",
+  "master_branch": "main",
+  "description": null,
+  "pusher_type": "user",
+  "repository": {
+    "full_name": "acme-corp/pipeline-app",
+    "default_branch": "main"
+  },
+  "sender": {
+    "login": "developer"
+  }
+}

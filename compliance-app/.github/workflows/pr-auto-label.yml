@@ -1,0 +1,35 @@
+name: PR Auto Label
+
+on:
+  pull_request:
+    types: [opened, labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "::notice::Evaluating PR #${PR_NUMBER}: ${PR_TITLE}"
+
+          case "${PR_TITLE}" in
+            feat:*|feature:*)
+              echo "Label: enhancement"
+              ;;
+            fix:*|bugfix:*)
+              echo "Label: bug"
+              ;;
+            docs:*)
+              echo "Label: documentation"
+              ;;
+            *)
+              echo "::notice::No auto-label rule matched for title"
+              ;;
+          esac

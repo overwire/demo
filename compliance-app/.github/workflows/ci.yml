@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'src/**'
+      - 'package*.json'
+
+permissions:
+  contents: read
+  checks: write
+  statuses: write
+
+jobs:
+  build:
+    uses: acme-corp/enterprise-actions/.github/workflows/build-nodejs-npm.yml@main
+    with:
+      node-version: '20'
+
+  security:
+    needs: build
+    uses: acme-corp/enterprise-actions/.github/workflows/codeql-scan.yml@main
+
+  audit:
+    needs: build
+    uses: acme-corp/enterprise-actions/.github/workflows/dependency-scan.yml@main
+
+  post-checks:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [build, security, audit]
+    steps:
+      - name: Post Build check run
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BUILD_RESULT: ${{ needs.build.result }}
+        run: |
+          CONCLUSION="success"
+          if [ "${BUILD_RESULT}" != "success" ]; then CONCLUSION="failure"; fi
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/check-runs" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"Build\",\"head_sha\":\"${HEAD_SHA}\",\"conclusion\":\"${CONCLUSION}\"}"
+      - name: Post Security check run
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SECURITY_RESULT: ${{ needs.security.result }}
+        run: |
+          CONCLUSION="success"
+          if [ "${SECURITY_RESULT}" != "success" ]; then CONCLUSION="failure"; fi
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/check-runs" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"Security\",\"head_sha\":\"${HEAD_SHA}\",\"conclusion\":\"${CONCLUSION}\"}"
+      - name: Post Audit check run
+        env:
+          GITHUB_API: ${{ github.api_url }}
+          REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          AUDIT_RESULT: ${{ needs.audit.result }}
+        run: |
+          CONCLUSION="success"
+          if [ "${AUDIT_RESULT}" != "success" ]; then CONCLUSION="failure"; fi
+          curl -s -X POST \
+            "${GITHUB_API}/repos/${REPO}/check-runs" \
+            -H "Authorization: token ${GITHUB_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"Audit\",\"head_sha\":\"${HEAD_SHA}\",\"conclusion\":\"${CONCLUSION}\"}"

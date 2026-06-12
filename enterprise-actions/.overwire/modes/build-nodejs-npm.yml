@@ -1,0 +1,12 @@
+defaultMode: live
+jobs:
+  build: live
+steps:
+  build.0: live
+  build.1: live
+  build.2: live
+  build.3: live
+  build.4: live
+  build.5: live
+  build.6: live
+  build.7: live

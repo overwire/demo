@@ -1,0 +1,18 @@
+uses: github/codeql-action/init@v3
+description: |
+  CodeQL setup step. In mock mode we don't fetch the CodeQL CLI; we just
+  validate inputs and declare the database/tool paths the analyze step
+  expects to find.
+inputs:
+  languages:
+    description: Comma-separated CodeQL languages (javascript, typescript, ...)
+    required: true
+  config-file:
+    description: Path to a CodeQL config file
+    required: false
+  source-root:
+    description: Source root to scan (default $GITHUB_WORKSPACE)
+    required: false
+outputs:
+  codeql-path: /opt/hostedtoolcache/CodeQL/2.16.0/x64/codeql/codeql
+  db-locations: '{"javascript":"/home/runner/work/_temp/codeql_databases/javascript"}'

@@ -1,0 +1,30 @@
+name: Database Migration
+description: Run database migrations using a containerized migration tool.
+author: acme-corp Platform Team
+
+inputs:
+  database-url:
+    description: PostgreSQL connection string
+    required: true
+  direction:
+    description: Migration direction (up or down)
+    required: false
+    default: up
+  dry-run:
+    description: Print planned migrations without applying
+    required: false
+    default: 'false'
+
+outputs:
+  applied-count:
+    description: Number of migrations applied
+  current-version:
+    description: Database schema version after migration
+
+runs:
+  using: docker
+  image: Dockerfile
+  env:
+    DATABASE_URL: ${{ inputs.database-url }}
+    DIRECTION: ${{ inputs.direction }}
+    DRY_RUN: ${{ inputs.dry-run }}

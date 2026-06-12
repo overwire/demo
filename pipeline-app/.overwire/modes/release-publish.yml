@@ -1,0 +1,12 @@
+defaultMode: mock
+jobs:
+  validate: mock
+  build: mock
+  sbom: mock
+  publish: mock
+steps:
+  validate.0: mock
+  publish.0: mock
+  publish.1: mock
+  publish.2: mock
+  publish.3: mock

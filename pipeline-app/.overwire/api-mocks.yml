@@ -1,0 +1,17 @@
+routes:
+  - method: POST
+    path: /repos/:owner/:repo/statuses/:sha
+    status: 201
+    body:
+      state: success
+      context: deploy
+      description: Mock commit status
+
+  - method: POST
+    path: /repos/:owner/:repo/issues/:number/comments
+    status: 201
+    body:
+      id: 9001
+      body: Mock issue comment
+      user:
+        login: github-actions[bot]

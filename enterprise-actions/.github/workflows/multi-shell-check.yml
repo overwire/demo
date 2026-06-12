@@ -1,0 +1,81 @@
+name: Multi-Shell Environment Check
+
+on:
+  workflow_call:
+    inputs:
+      checks:
+        description: JSON array of checks to run
+        type: string
+        required: false
+        default: '["bash","python","node","pwsh"]'
+    outputs:
+      results:
+        description: JSON results of all checks
+        value: ${{ jobs.check.outputs.results }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    outputs:
+      results: ${{ steps.aggregate.outputs.results }}
+    steps:
+      - name: Bash environment
+        if: contains(fromJSON(inputs.checks), 'bash')
+        run: |
+          echo "Bash version: $BASH_VERSION"
+          echo "::notice title=Bash::Version $BASH_VERSION detected"
+
+      - name: Python validation
+        if: contains(fromJSON(inputs.checks), 'python')
+        shell: python
+        run: |
+          import sys, json, os
+          result = {
+              "python_version": sys.version.split()[0],
+              "platform": sys.platform,
+              "prefix": sys.prefix
+          }
+          print(json.dumps(result, indent=2))
+
+      - name: Node.js validation
+        if: contains(fromJSON(inputs.checks), 'node')
+        shell: node {0}
+        run: |
+          const os = require('os');
+          const result = {
+            node_version: process.version,
+            arch: os.arch(),
+            platform: os.platform(),
+            cpus: os.cpus().length
+          };
+          console.log(JSON.stringify(result, null, 2));
+
+      - name: PowerShell check
+        if: contains(fromJSON(inputs.checks), 'pwsh')
+        shell: pwsh
+        run: |
+          $info = @{
+            PSVersion = $PSVersionTable.PSVersion.ToString()
+            OS = [System.Runtime.InteropServices.RuntimeInformation]::OSDescription
+          }
+          $info | ConvertTo-Json
+
+      - name: Aggregate results
+        id: aggregate
+        env:
+          CHECKS_INPUT: ${{ inputs.checks }}
+          CHECKS_JOINED: ${{ join(fromJSON(inputs.checks), ', ') }}
+        run: |
+          echo "Ran checks: ${CHECKS_JOINED}"
+          echo "results={\"status\":\"complete\",\"checks\":${CHECKS_INPUT}}" >> "$GITHUB_OUTPUT"
+
+      - name: Shell check summary
+        env:
+          CHECKS_JOINED: ${{ join(fromJSON(inputs.checks), ' | ') }}
+        run: |
+          echo "## Shell Environment Check" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Shells tested: ${CHECKS_JOINED}" >> "$GITHUB_STEP_SUMMARY"

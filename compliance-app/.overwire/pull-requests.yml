@@ -1,0 +1,48 @@
+pullRequests:
+  - number: 10
+    title: "feat: add caching layer"
+    state: open
+    head:
+      ref: feat/caching-layer
+      sha: ccc3333333333333333333333333333333333333
+    base:
+      ref: main
+      sha: ddd4444444444444444444444444444444444444
+    changedFiles:
+      - src/core/cache.js
+      - src/core/cache.test.js
+      - src/api/handler.js
+    reviews:
+      - user: platform-lead
+        state: APPROVED
+        codeOwner: true
+
+  - number: 11
+    title: "docs: update API guide"
+    state: open
+    head:
+      ref: docs/api-guide
+      sha: eee5555555555555555555555555555555555555
+    base:
+      ref: main
+      sha: ddd4444444444444444444444444444444444444
+    changedFiles:
+      - docs/api-guide.md
+    reviews: []
+
+  - number: 12
+    title: "fix: auth bypass"
+    state: open
+    head:
+      ref: fix/auth-bypass
+      sha: fff6666666666666666666666666666666666666
+    base:
+      ref: main
+      sha: ddd4444444444444444444444444444444444444
+    changedFiles:
+      - src/core/index.js
+      - src/api/auth.js
+    reviews:
+      - user: backend-lead
+        state: APPROVED
+        codeOwner: true

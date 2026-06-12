@@ -1,0 +1,72 @@
+name: Repository Dispatch
+
+on:
+  repository_dispatch:
+    types: [deploy-request, rollback-request]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'deploy-request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Parse payload
+        id: payload
+        env:
+          VERSION: ${{ github.event.client_payload.version }}
+          ENVIRONMENT: ${{ github.event.client_payload.environment }}
+          REQUESTER: ${{ github.event.client_payload.requester }}
+          PAYLOAD_JSON: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          echo "Deploy request received"
+          echo "Version: ${VERSION}"
+          echo "Environment: ${ENVIRONMENT}"
+          echo "Requester: ${REQUESTER}"
+          echo "Full payload: ${PAYLOAD_JSON}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "environment=${ENVIRONMENT}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy
+        env:
+          VERSION: ${{ steps.payload.outputs.version }}
+          ENVIRONMENT: ${{ steps.payload.outputs.environment }}
+        run: |
+          echo "Deploying ${VERSION} to ${ENVIRONMENT}"
+
+      - name: Deploy summary
+        env:
+          VERSION: ${{ steps.payload.outputs.version }}
+          ENVIRONMENT: ${{ steps.payload.outputs.environment }}
+          DISPATCH_TYPE: ${{ github.event.action }}
+        run: |
+          echo "## Dispatch Deploy" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Type:** ${DISPATCH_TYPE}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Version:** ${VERSION}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Environment:** ${ENVIRONMENT}" >> "$GITHUB_STEP_SUMMARY"
+
+  rollback:
+    runs-on: ubuntu-latest
+    if: github.event.action == 'rollback-request'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rollback
+        env:
+          TARGET_VERSION: ${{ github.event.client_payload.target_version }}
+          ENVIRONMENT: ${{ github.event.client_payload.environment }}
+          REASON: ${{ github.event.client_payload.reason }}
+        run: |
+          echo "Rolling back ${ENVIRONMENT} to version ${TARGET_VERSION}"
+          echo "Reason: ${REASON}"
+
+      - name: Rollback summary
+        env:
+          TARGET_VERSION: ${{ github.event.client_payload.target_version }}
+          ENVIRONMENT: ${{ github.event.client_payload.environment }}
+        run: |
+          echo "## Dispatch Rollback" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Target version:** ${TARGET_VERSION}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Environment:** ${ENVIRONMENT}" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,56 @@
+name: Fork-Safe PR Check
+
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout base
+        uses: actions/checkout@v4
+
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr-head
+
+      - name: Validate PR origin
+        env:
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          BASE_REPO: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          IS_FORK="false"
+          if [ "${HEAD_REPO}" != "${BASE_REPO}" ]; then
+            IS_FORK="true"
+            echo "::notice title=Fork PR::PR #${PR_NUMBER} from fork ${HEAD_REPO}"
+          fi
+          echo "Head repo: ${HEAD_REPO}"
+          echo "Base repo: ${BASE_REPO}"
+          echo "Is fork: ${IS_FORK}"
+          echo "Head SHA: ${HEAD_SHA}"
+
+      - name: Run safe checks
+        run: |
+          echo "Running read-only analysis on PR head..."
+          ls pr-head/ || true
+
+      - name: PR check summary
+        env:
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "## Fork-Safe PR Check" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **PR:** #${PR_NUMBER}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Title:** ${PR_TITLE}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Source:** ${HEAD_REPO}" >> "$GITHUB_STEP_SUMMARY"
