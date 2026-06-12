@@ -243,7 +243,7 @@ The compliance-app also has `custom-properties.yml` with repository metadata (te
 
 ## License
 
-Copyright © 2026 Overwire. All rights reserved.
+[MIT](./LICENSE). Copy anything in this workspace into your own workflows and config.
 
 The organizations, repositories, applications, and people in this workspace are fictional and exist solely to demonstrate Overwire.
 
