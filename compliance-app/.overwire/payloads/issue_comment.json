@@ -1,3 +1,14 @@
 {
-  "action": "created"
+  "action": "created",
+  "issue": {
+    "number": 42,
+    "title": "Request: compliance exception for the release branch",
+    "state": "open"
+  },
+  "comment": {
+    "body": "/approve-exception expires=2026-07-01",
+    "user": {
+      "login": "compliance-admin"
+    }
+  }
 }

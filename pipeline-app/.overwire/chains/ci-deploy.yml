@@ -6,5 +6,4 @@ runs:
   - id: deploy
     workflow: deploy.yml
     event: workflow_dispatch
-    payload: ../dispatch/deploy.yml
     continueOnError: true

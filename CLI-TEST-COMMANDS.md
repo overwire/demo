@@ -112,9 +112,11 @@ overwire run pipeline-app/.github/workflows/branch-lifecycle.yml \
 ## Workflow Runs — compliance-app
 
 ```sh
-# pull_request with status checks
+# pull_request with status checks (ci.yml has a paths filter, so pass
+# changed files that match it)
 overwire run compliance-app/.github/workflows/ci.yml \
-  --config-root compliance-app/.overwire --event pull_request
+  --config-root compliance-app/.overwire --event pull_request \
+  --changed-files src/api/handler.js
 
 # pull_request_target
 overwire run compliance-app/.github/workflows/fork-safe-pr.yml \
@@ -185,13 +187,19 @@ overwire run enterprise-actions/.github/workflows/build-and-attest.yml \
 ## Workflow Chains
 
 ```sh
-overwire chain list --config-root pipeline-app/.overwire
-overwire chain list --config-root compliance-app/.overwire
+# Run a chain scenario file
+overwire chain pipeline-app/.overwire/chains/ci-deploy.yml \
+  --config-root pipeline-app/.overwire
+overwire chain pipeline-app/.overwire/chains/release-lifecycle.yml \
+  --config-root pipeline-app/.overwire
+overwire chain compliance-app/.overwire/chains/pr-lifecycle.yml \
+  --config-root compliance-app/.overwire
+overwire chain compliance-app/.overwire/chains/scheduled-compliance.yml \
+  --config-root compliance-app/.overwire
 
-overwire chain run ci-deploy --config-root pipeline-app/.overwire
-overwire chain run release-lifecycle --config-root pipeline-app/.overwire
-overwire chain run pr-lifecycle --config-root compliance-app/.overwire
-overwire chain run scheduled-compliance --config-root compliance-app/.overwire
+# Inspect past chain sessions
+overwire chain list --config-root pipeline-app/.overwire
+overwire chain show <session-id> --config-root pipeline-app/.overwire
 ```
 
 ## Mock Contracts and Resolution

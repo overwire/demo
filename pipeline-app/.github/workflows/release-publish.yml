@@ -46,7 +46,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: [validate, build, sbom]
-    if: ${{ !fromJSON(needs.validate.outputs.is-prerelease) }}
+    if: ${{ !fromJSON(needs.validate.outputs.is-prerelease || 'false') }}
     environment: production
     steps:
       - uses: actions/checkout@v4
