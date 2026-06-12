@@ -1,6 +1,6 @@
 name: Dynamic Matrix
 
-# Phase 7 reference — requires fromJSON() dynamic matrix support
+# Demonstrates a fromJSON() dynamic matrix fed by a discover job
 
 on:
   workflow_dispatch:
