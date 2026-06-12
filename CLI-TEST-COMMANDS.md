@@ -45,11 +45,11 @@ overwire simulate delete --ref-type branch
 overwire simulate schedule --schedule "0 0 * * 1"
 overwire simulate issue_comment --comment-body "/deploy staging"
 overwire simulate issues --issue-action opened
-overwire simulate pull_request_target --pr-action opened
+overwire simulate pull_request_review --review-state approved
 overwire simulate merge_group
-overwire simulate workflow_run
-overwire simulate workflow_call
 ```
+
+`pull_request_target`, `workflow_run`, and `workflow_call` are run/trigger events rather than simulate targets — exercise them with `overwire run --event <name>` (see the run sections below).
 
 ## Workflow Runs — hello-app
 
