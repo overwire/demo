@@ -1,8 +1,0 @@
-required_reviewers:
-  - release-managers
-variables:
-  DEPLOY_URL: https://acme-corp.example.com
-  LOG_LEVEL: warn
-secrets:
-  NPM_TOKEN: mock
-  DEPLOY_KEY: mock

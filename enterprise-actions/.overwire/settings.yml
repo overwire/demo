@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/settings.schema.json
 owner: acme-corp
 logs:
   plaintextSecrets: false

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/statuses.schema.json
 # Pre-staged check run conclusions per PR
 # PR #10: all pass -> compliance PASS (with review)
 # PR #11: all pass -> compliance FAIL (missing review)

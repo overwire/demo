@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/mock-contract.schema.json
 uses: actions/attest-build-provenance@v1
 description: |
   Produces a SLSA build provenance attestation signed via the GitHub OIDC

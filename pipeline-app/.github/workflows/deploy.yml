@@ -77,7 +77,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     if: always()
-    needs: deploy
+    needs: [gate, deploy]
     steps:
       - name: Post commit status
         env:

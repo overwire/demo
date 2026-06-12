@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/pull-requests.schema.json
 pullRequests:
   - number: 10
     title: "feat: add caching layer"

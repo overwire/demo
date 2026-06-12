@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/mock-contract.schema.json
 uses: github/codeql-action/analyze@v3
 description: |
   Runs the CodeQL analysis and uploads SARIF results to GitHub Code Scanning.

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/mock-contract.schema.json
 uses: github/codeql-action/init@v3
 description: |
   CodeQL setup step. In mock mode we don't fetch the CodeQL CLI; we just

@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/mock-contract.schema.json
 uses: acme-corp/enterprise-actions/.github/actions/db-migrate@main
 description: Mock contract for containerized database migration action
 inputs:

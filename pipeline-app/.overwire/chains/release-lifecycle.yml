@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/chain.schema.json
 name: Release Lifecycle
 description: Build, SBOM, and publish on release tag
 runs:
