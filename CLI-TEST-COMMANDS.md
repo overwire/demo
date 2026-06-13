@@ -211,8 +211,9 @@ overwire resolve actions/checkout@v4
 overwire resolve actions/setup-node@v4
 overwire resolve actions/cache@v4
 
+# Seed into a scratch dir so tour runs leave the repo clean
 overwire seed-mocks pipeline-app/.github/workflows/ci.yml \
-  --config-root pipeline-app/.overwire --out pipeline-app/.overwire/mocks
+  --config-root pipeline-app/.overwire --out /tmp/overwire-seeded-mocks --force
 ```
 
 ## History, Status, Cache
