@@ -5,4 +5,4 @@ jobs:
 steps:
   sbom.0: live
   sbom.1: mock
-  sbom.2: live
+  sbom.2: mock

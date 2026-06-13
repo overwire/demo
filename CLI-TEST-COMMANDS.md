@@ -176,6 +176,8 @@ overwire run enterprise-actions/.github/workflows/deploy-preview.yml \
 overwire run enterprise-actions/.github/workflows/quality-report.yml \
   --config-root enterprise-actions/.overwire --event workflow_call --inputs '{}'
 
+# The mocked upload step materializes a CycloneDX SBOM into the run's
+# artifact store (mocks/upload-sbom.yml declares it from a fixture)
 overwire run enterprise-actions/.github/workflows/generate-sbom.yml \
   --config-root enterprise-actions/.overwire --event workflow_call --inputs '{}'
 
@@ -210,7 +212,7 @@ overwire resolve actions/setup-node@v4
 overwire resolve actions/cache@v4
 
 overwire seed-mocks pipeline-app/.github/workflows/ci.yml \
-  --config-root pipeline-app/.overwire
+  --config-root pipeline-app/.overwire --out pipeline-app/.overwire/mocks
 ```
 
 ## History, Status, Cache
@@ -226,7 +228,8 @@ overwire cache tool-cache
 ## Advanced Flags
 
 ```sh
-# Force past validation errors
+# Force past validation errors — the forced run then fails cleanly (exit 1)
+# at event input resolution, since the required dispatch inputs are missing
 overwire run pipeline-app/.github/workflows/deploy.yml \
   --config-root pipeline-app/.overwire --event workflow_dispatch \
   --inputs '{}' --force

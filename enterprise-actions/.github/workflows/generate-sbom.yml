@@ -54,6 +54,7 @@ jobs:
           output-file: ${{ inputs.artifact-name }}.json
 
       - name: Upload SBOM
+        id: upload-sbom
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact-name }}

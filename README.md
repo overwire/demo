@@ -30,7 +30,7 @@ demo/
 │   │   │   ├── build-nodejs-npm.yml             # checkout → setup-node → install/lint/build/test
 │   │   │   ├── codeql-scan.yml                  # codeql-action init + analyze (mocked)
 │   │   │   ├── dependency-scan.yml              # npm audit with continue-on-error
-│   │   │   ├── generate-sbom.yml                # sbom-action + upload-artifact
+│   │   │   ├── generate-sbom.yml                # sbom-action + mock artifact from a fixture SBOM
 │   │   │   ├── attest-build-provenance.yml      # download-artifact + attest (mocked)
 │   │   │   ├── lint-check.yml                   # lint with continue-on-error + outcome output
 │   │   │   ├── deploy-preview.yml               # deploy with environment/version/dry-run inputs
