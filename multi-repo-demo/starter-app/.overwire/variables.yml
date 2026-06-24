@@ -1,0 +1,2 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/variables.schema.json
+NODE_VERSION_DEFAULT: '20'
