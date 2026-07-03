@@ -173,5 +173,3 @@ The compliance-app also has `custom-properties.yml` with repository metadata (te
 [MIT](../LICENSE). Copy anything in this workspace into your own workflows and config.
 
 The organizations, repositories, applications, and people in this workspace are fictional and exist solely to demonstrate Overwire.
-
-Overwire is compatible with GitHub Actions workflow files. Overwire is not affiliated with, endorsed by, or sponsored by GitHub, Inc., Microsoft Corporation, or Docker, Inc. GitHub and GitHub Actions are trademarks of GitHub, Inc.

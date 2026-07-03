@@ -27,4 +27,4 @@ A four-repository workspace across two fictional organizations showcasing multi-
 
 ---
 
-Overwire is not affiliated with, endorsed by, or sponsored by GitHub, Inc., Microsoft Corporation, or Docker, Inc. GitHub and GitHub Actions are trademarks of GitHub, Inc. The organizations and repositories in this workspace are fictional.
+Overwire is not affiliated with, endorsed by, or sponsored by GitHub, Inc. GitHub and GitHub Actions are trademarks of GitHub, Inc. The organizations and repositories in this workspace are fictional.
