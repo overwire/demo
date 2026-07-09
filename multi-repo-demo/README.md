@@ -8,10 +8,9 @@ Two organizations: `acme-corp` (starter-app, pipeline-app, enterprise-actions) a
 
 ```sh
 cd multi-repo-demo
-overwire init --workspace
 ```
 
-Or drive everything from the CLI: [CLI-TEST-COMMANDS.md](./CLI-TEST-COMMANDS.md) walks through commands for all four repos in a recommended order.
+That's it — the workspace peer registry (`.overwire/instances.yml`) ships checked in, so the demo works straight from a clone. Open the directory in the Overwire app, or drive everything from the CLI: [CLI-TEST-COMMANDS.md](./CLI-TEST-COMMANDS.md) walks through commands for all four repos in a recommended order. (Run `overwire init --workspace` only if you add or move repos.)
 
 New to Overwire? Start with the [documentation](https://docs.overwire.io), then come back here. The [demo workspace guide](https://docs.overwire.io/getting-started/demo/) covers what to try first.
 
