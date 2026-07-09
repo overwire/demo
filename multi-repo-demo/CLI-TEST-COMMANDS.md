@@ -1,6 +1,6 @@
 # CLI Test Commands
 
-Comprehensive set of commands to exercise Overwire CLI capabilities against all 4 repos in this workspace. Run from the `demo` directory.
+Comprehensive set of commands to exercise Overwire CLI capabilities against all 4 repos in this workspace. Run from the `multi-repo-demo` directory.
 
 ---
 
@@ -8,21 +8,21 @@ Comprehensive set of commands to exercise Overwire CLI capabilities against all 
 
 ```sh
 # List workflows per repo
-overwire list --config-root hello-app/.overwire
+overwire list --config-root starter-app/.overwire
 overwire list --config-root pipeline-app/.overwire
 overwire list --config-root compliance-app/.overwire
 overwire list --config-root enterprise-actions/.overwire
 
 # Parse workflows
-overwire parse hello-app/.github/workflows/ci.yml
+overwire parse starter-app/.github/workflows/ci.yml
 overwire parse pipeline-app/.github/workflows/deploy.yml --json
 
 # Support matrix
-overwire explain hello-app/.github/workflows/ci.yml
+overwire explain starter-app/.github/workflows/ci.yml
 overwire explain pipeline-app/.github/workflows/integration-test.yml
 
 # Lint
-overwire lint hello-app/.github/workflows/ci.yml
+overwire lint starter-app/.github/workflows/ci.yml
 overwire lint compliance-app/.github/workflows/bad-practices.yml
 overwire lint enterprise-actions/.github/workflows/build-nodejs-npm.yml --json
 
@@ -51,16 +51,16 @@ overwire simulate merge_group
 
 `pull_request_target`, `workflow_run`, and `workflow_call` are run/trigger events rather than simulate targets — exercise them with `overwire run --event <name>` (see the run sections below).
 
-## Workflow Runs — hello-app
+## Workflow Runs — starter-app
 
 ```sh
 # push — uses reusable workflow from enterprise-actions
-overwire run hello-app/.github/workflows/ci.yml \
-  --config-root hello-app/.overwire --event push
+overwire run starter-app/.github/workflows/ci.yml \
+  --config-root starter-app/.overwire --event push
 
 # workflow_dispatch — expression evaluation
-overwire run hello-app/.github/workflows/env-and-expressions.yml \
-  --config-root hello-app/.overwire --event workflow_dispatch
+overwire run starter-app/.github/workflows/env-and-expressions.yml \
+  --config-root starter-app/.overwire --event workflow_dispatch
 ```
 
 ## Workflow Runs — pipeline-app
@@ -219,7 +219,7 @@ overwire seed-mocks enterprise-actions/.github/workflows/build-nodejs-npm.yml \
 ## History, Status, Cache
 
 ```sh
-overwire history --config-root hello-app/.overwire
+overwire history --config-root starter-app/.overwire
 overwire history --config-root pipeline-app/.overwire
 overwire status --config-root pipeline-app/.overwire
 overwire cache
@@ -236,12 +236,12 @@ overwire run pipeline-app/.github/workflows/deploy.yml \
   --inputs '{}' --force
 
 # Skip action cache
-overwire run hello-app/.github/workflows/ci.yml \
-  --config-root hello-app/.overwire --event push --no-action-cache
+overwire run starter-app/.github/workflows/ci.yml \
+  --config-root starter-app/.overwire --event push --no-action-cache
 
 # Debug mode
-overwire run hello-app/.github/workflows/env-and-expressions.yml \
-  --config-root hello-app/.overwire --event workflow_dispatch --debug
+overwire run starter-app/.github/workflows/env-and-expressions.yml \
+  --config-root starter-app/.overwire --event workflow_dispatch --debug
 ```
 
 ---
