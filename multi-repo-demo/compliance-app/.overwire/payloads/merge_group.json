@@ -7,7 +7,7 @@
     "base_ref": "refs/heads/main"
   },
   "repository": {
-    "full_name": "acme-corp/compliance-app",
+    "full_name": "wire-corp/compliance-app",
     "default_branch": "main"
   },
   "sender": {

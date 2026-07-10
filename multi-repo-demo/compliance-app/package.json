@@ -1,5 +1,5 @@
 {
-  "name": "@acme-corp/compliance-app",
+  "name": "@wire-corp/compliance-app",
   "version": "3.0.0",
   "description": "Governance and compliance showcase for Overwire",
   "main": "src/core/index.js",
