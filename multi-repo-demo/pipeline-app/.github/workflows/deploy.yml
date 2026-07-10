@@ -82,6 +82,7 @@ jobs:
       - name: Post commit status
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           SHA: ${{ github.sha }}
           DEPLOY_RESULT: ${{ needs.deploy.result }}
@@ -98,6 +99,7 @@ jobs:
       - name: Post issue comment
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           DEPLOY_RESULT: ${{ needs.deploy.result }}
           DEPLOY_ENV: ${{ needs.gate.outputs.environment }}

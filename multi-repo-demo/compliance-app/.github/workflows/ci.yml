@@ -34,6 +34,7 @@ jobs:
       - name: Post Build check run
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BUILD_RESULT: ${{ needs.build.result }}
@@ -48,6 +49,7 @@ jobs:
       - name: Post Security check run
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           SECURITY_RESULT: ${{ needs.security.result }}
@@ -62,6 +64,7 @@ jobs:
       - name: Post Audit check run
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           AUDIT_RESULT: ${{ needs.audit.result }}

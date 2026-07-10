@@ -37,6 +37,7 @@ jobs:
         if: steps.parse.outputs.command == '/approve-exception'
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           AUTHOR: ${{ github.event.comment.user.login }}
@@ -56,6 +57,7 @@ jobs:
         if: steps.parse.outputs.command == '/request-review'
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ARGS: ${{ steps.parse.outputs.args }}
@@ -73,6 +75,7 @@ jobs:
       - name: Label by title pattern
         env:
           GITHUB_API: ${{ github.api_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_TITLE: ${{ github.event.issue.title }}

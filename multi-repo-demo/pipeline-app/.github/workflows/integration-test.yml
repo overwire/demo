@@ -63,6 +63,9 @@ jobs:
 
       - name: Test summary
         if: always()
+        env:
+          APPLIED: ${{ steps.migrate.outputs.applied-count }}
+          SCHEMA_VERSION: ${{ steps.migrate.outputs.current-version }}
         run: |
           echo "## Integration Test Results" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -72,4 +75,4 @@ jobs:
           echo "| Redis | redis:7-alpine | 6379 |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Container: \`node:20-bookworm\`" >> "$GITHUB_STEP_SUMMARY"
-          echo "Migrations applied: ${{ steps.migrate.outputs.applied-count }} (schema ${{ steps.migrate.outputs.current-version }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "Migrations applied: ${APPLIED} (schema ${SCHEMA_VERSION})" >> "$GITHUB_STEP_SUMMARY"
