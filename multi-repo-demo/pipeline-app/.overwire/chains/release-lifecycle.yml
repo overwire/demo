@@ -2,5 +2,5 @@
 name: Release Lifecycle
 description: Build, SBOM, and publish on release tag
 runs:
-  - workflow: release-publish
+  - workflow: release-publish.yml
     event: release
