@@ -1,10 +1,6 @@
 # yaml-language-server: $schema=https://docs.overwire.io/schemas/modes.schema.json
 defaultMode: mock
-jobs:
-  discover:
-    steps:
-      actions/checkout@v4: mock
-  test:
-    steps:
-      actions/checkout@v4: mock
-      actions/setup-node@v4: mock
+steps:
+  discover.0: mock
+  test.0: mock
+  test.1: mock
