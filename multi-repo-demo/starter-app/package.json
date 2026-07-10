@@ -1,5 +1,5 @@
 {
-  "name": "@acme-corp/hello-app",
+  "name": "@acme-corp/starter-app",
   "version": "1.0.0",
   "description": "Simple demo app for Overwire — reusable workflows and output chaining",
   "main": "src/index.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/acme-corp/hello-app.git"
+    "url": "https://github.com/acme-corp/starter-app.git"
   },
   "license": "Apache-2.0",
   "author": "acme-corp Platform Team"

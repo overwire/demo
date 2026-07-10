@@ -20,5 +20,5 @@ inputs:
     default: false
 outputs:
   attestation-id: '12345678'
-  attestation-url: https://github.com/acme-corp/hello-node-app/attestations/12345678
+  attestation-url: https://github.com/acme-corp/starter-app/attestations/12345678
   bundle-path: /home/runner/_temp/attestations/12345678.intoto.jsonl
