@@ -10,3 +10,6 @@
 
 # Node (if npm ci is run inside the fixture repos)
 node_modules/
+
+# Scratch output of the CLI tour seed-mocks command
+**/.seeded-mocks/

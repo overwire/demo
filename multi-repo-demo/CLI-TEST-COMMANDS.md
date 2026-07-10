@@ -6,6 +6,8 @@ Comprehensive set of commands to exercise Overwire CLI capabilities against all 
 
 ## Introspection (no Docker needed)
 
+*Expect: every command exits 0 — `list` prints each repo's workflow table, `lint bad-practices` reports the four intentional findings, `doctor` may warn that Docker is down (fine: mock runs never need it).*
+
 ```sh
 # List workflows per repo
 overwire list --config-root starter-app/.overwire
@@ -33,6 +35,8 @@ overwire doctor capabilities
 
 ## Event Simulation (no execution)
 
+*Expect: each command prints the synthetic event payload and workflow context as JSON; exit 0.*
+
 ```sh
 overwire simulate push
 overwire simulate pull_request
@@ -53,6 +57,8 @@ overwire simulate merge_group
 
 ## Workflow Runs — starter-app
 
+*Expect: `result: success` (with `--json`: a final `run:result` line, `"outcome":"success"`, every step `"mode":"mock"`).*
+
 ```sh
 # push — uses reusable workflow from enterprise-actions
 overwire run starter-app/.github/workflows/ci.yml \
@@ -65,6 +71,8 @@ overwire run starter-app/.github/workflows/env-and-expressions.yml \
 
 ## Workflow Runs — pipeline-app
 
+*Expect: `result: success` for each; the deploy run pauses for the staging environment's protection rule (approve at the prompt; non-interactive sessions auto-approve).*
+
 ```sh
 # push with matrix strategy
 overwire run pipeline-app/.github/workflows/ci.yml \
@@ -73,7 +81,7 @@ overwire run pipeline-app/.github/workflows/ci.yml \
 # pull_request with path filters
 overwire run pipeline-app/.github/workflows/ci.yml \
   --config-root pipeline-app/.overwire --event pull_request \
-  --changed-files src/index.ts --changed-files package.json
+  --changed-files src/index.js --changed-files package.json
 
 # workflow_dispatch with inputs + environment protection
 overwire run pipeline-app/.github/workflows/deploy.yml \
@@ -91,7 +99,7 @@ overwire run pipeline-app/.github/workflows/compat.yml \
 # services containers (postgres, redis)
 overwire run pipeline-app/.github/workflows/integration-test.yml \
   --config-root pipeline-app/.overwire --event pull_request \
-  --changed-files src/db.ts
+  --changed-files src/config.js
 
 # release event
 overwire run pipeline-app/.github/workflows/release-publish.yml \
@@ -110,6 +118,8 @@ overwire run pipeline-app/.github/workflows/branch-lifecycle.yml \
 ```
 
 ## Workflow Runs — compliance-app
+
+*Expect: `result: success`; ci and issue-ops end with an `api requests:` summary — their check-run/label/comment POSTs are served by the local API mock.*
 
 ```sh
 # pull_request with status checks (ci.yml has a paths filter, so pass
@@ -153,6 +163,8 @@ overwire run compliance-app/.github/workflows/bad-practices.yml \
 
 ## Reusable Workflows — enterprise-actions (workflow_call)
 
+*Expect: `result: success` for each call.*
+
 ```sh
 overwire run enterprise-actions/.github/workflows/build-nodejs-npm.yml \
   --config-root enterprise-actions/.overwire --event workflow_call \
@@ -188,6 +200,8 @@ overwire run enterprise-actions/.github/workflows/build-and-attest.yml \
 
 ## Workflow Chains
 
+*Expect: per-workflow progress, then the session ends `conclusion: success`; `chain list` shows the recorded sessions afterward.*
+
 ```sh
 # Run a chain scenario file
 overwire chain pipeline-app/.overwire/chains/ci-deploy.yml \
@@ -206,17 +220,22 @@ overwire chain show <session-id> --config-root pipeline-app/.overwire
 
 ## Mock Contracts and Resolution
 
+*Expect: `resolve` prints each action's inputs/outputs; `seed-mocks` reports `N written` into `./.seeded-mocks` (git-ignored).*
+
 ```sh
+# resolve fetches each action.yml from GitHub — needs network on first run
 overwire resolve actions/checkout@v4
 overwire resolve actions/setup-node@v4
 overwire resolve actions/cache@v4
 
-# Seed into a scratch dir so tour runs leave the repo clean
+# Seed into a git-ignored scratch dir so tour runs leave the repo clean
 overwire seed-mocks enterprise-actions/.github/workflows/build-nodejs-npm.yml \
-  --config-root enterprise-actions/.overwire --out /tmp/overwire-seeded-mocks --force
+  --config-root enterprise-actions/.overwire --out ./.seeded-mocks --force
 ```
 
 ## History, Status, Cache
+
+*Expect: `history` lists this session's runs newest-first; `status` shows the latest run plus merge prediction for the staged PRs; `cache` prints the action-cache summary.*
 
 ```sh
 overwire history --config-root starter-app/.overwire
@@ -227,6 +246,8 @@ overwire cache tool-cache
 ```
 
 ## Advanced Flags
+
+*Expect: the `--force` run exits 1 as documented below; the other two end `result: success`.*
 
 ```sh
 # Force past validation errors — the forced run then fails cleanly (exit 1)
