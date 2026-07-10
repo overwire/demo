@@ -1,6 +1,6 @@
 # CLI Test Commands
 
-Comprehensive set of commands to exercise Overwire CLI capabilities against all 4 repos in this workspace. Run from the `multi-repo-demo` directory.
+Comprehensive set of commands to exercise Overwire CLI capabilities against all 4 repos in this workspace. Run from the `multi-repo-demo` directory — or run the whole recommended order in one shot: `./tour.sh` (mock-only, asserts every step; CI runs it on every push).
 
 ---
 
