@@ -4,11 +4,13 @@ A self-contained single-repo demo for [Overwire](https://overwire.io), the local
 
 ## Quick start
 
-Open the `single-repo-demo/` directory in Overwire, or run from the CLI:
+No prerequisites beyond Overwire itself for the mock-mode tour — see the repo [prerequisites](../README.md#prerequisites). Open the `single-repo-demo/` directory in Overwire, or run from the CLI:
 
 ```sh
-overwire run .github/workflows/ci.yml --event push
+overwire run .github/workflows/ci.yml --config-root .overwire --event push
 ```
+
+Everything is pre-configured; `.overwire/state/` and the run store are the only things a run writes, both outside version control. To start fresh, see [Reset the demo](../README.md#reset-the-demo).
 
 ## What's included
 

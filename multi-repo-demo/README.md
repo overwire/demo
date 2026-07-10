@@ -12,7 +12,7 @@ cd multi-repo-demo
 
 That's it — the workspace peer registry (`.overwire/instances.yml`) ships checked in, so the demo works straight from a clone. Open the directory in the Overwire app, or drive everything from the CLI: [CLI-TEST-COMMANDS.md](./CLI-TEST-COMMANDS.md) walks through commands for all four repos in a recommended order. (Run `overwire init --workspace` only if you add or move repos.)
 
-New to Overwire? Start with the [documentation](https://docs.overwire.io), then come back here. The [demo workspace guide](https://docs.overwire.io/getting-started/demo/) covers what to try first.
+New to Overwire? Check the [prerequisites](../README.md#prerequisites) (none beyond Overwire itself for the mock-mode tour), start with the [documentation](https://docs.overwire.io), then come back here. The [demo workspace guide](https://docs.overwire.io/getting-started/demo/) covers what to try first.
 
 ## What's inside
 
@@ -42,6 +42,8 @@ multi-repo-demo/
 │   │       └── db-migrate/action.yml            # Docker action with Dockerfile + entrypoint
 │   └── .overwire/
 │       ├── settings.yml
+│       ├── secrets.yml                          # null-valued declarations only
+│       ├── dispatch/                            # saved event defaults per workflow
 │       ├── modes/                               # per-workflow mode defaults
 │       └── mocks/                               # contracts for third-party scanners
 │
@@ -51,7 +53,7 @@ multi-repo-demo/
 │   ├── .github/workflows/
 │   │   ├── ci.yml                               # push → reusable build + report job
 │   │   └── env-and-expressions.yml              # GITHUB_ENV, GITHUB_PATH, expression builtins
-│   └── .overwire/                               # minimal config
+│   └── .overwire/                               # settings, variables, secrets, modes/, payloads/, dispatch/
 │
 ├── pipeline-app/                        # complex CI/CD showcase
 │   ├── src/ + lib/                              # config + utils modules
@@ -66,8 +68,10 @@ multi-repo-demo/
 │   │   ├── repository-dispatch.yml              # dispatch types: deploy-request, rollback
 │   │   └── branch-lifecycle.yml                 # create/delete event handling
 │   └── .overwire/
+│       ├── settings.yml, variables.yml, secrets.yml
 │       ├── modes/, payloads/, dispatch/
-│       ├── environments/{staging,production}/
+│       ├── mocks/                               # setup-project, db-migrate, upload-sbom contracts
+│       ├── environments/{staging,canary,production}/
 │       ├── api-mocks.yml                        # commit status + issue comment POSTs
 │       └── chains/
 │           ├── ci-deploy.yml                    # CI → Deploy chain
@@ -75,7 +79,7 @@ multi-repo-demo/
 │
 └── compliance-app/                      # governance showcase
     ├── src/core/ + src/api/                     # cache + handler + auth (ownership boundaries)
-    ├── docs/                                    # docs owned by @acme-corp/docs
+    ├── docs/                                    # docs owned by @wire-corp/docs
     ├── scripts/                                 # lint + build
     ├── .github/
     │   ├── CODEOWNERS                           # multi-team ownership
@@ -89,6 +93,8 @@ multi-repo-demo/
     │       ├── scheduled-audit.yml              # cron schedule + python shell
     │       └── merge-queue-checks.yml           # merge_group trigger
     └── .overwire/
+        ├── settings.yml, variables.yml, secrets.yml
+        ├── modes/, payloads/, dispatch/
         ├── rulesets.json                        # "Protect main" + "Release branches"
         ├── custom-properties.yml                # repo metadata (team, compliance tier)
         ├── pull-requests.yml                    # 3 PRs: pass, missing review, failed check
