@@ -7,7 +7,7 @@ inputs:
     required: true
   direction:
     description: Migration direction (up or down)
-    required: true
+    required: false
     default: up
   dry-run:
     description: Whether to simulate without applying changes

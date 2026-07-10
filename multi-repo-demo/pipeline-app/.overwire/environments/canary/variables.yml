@@ -1,0 +1,3 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/variables.schema.json
+DEPLOY_URL: https://canary.acme-corp.example.com
+LOG_LEVEL: info
