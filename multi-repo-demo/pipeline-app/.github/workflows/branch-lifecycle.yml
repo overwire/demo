@@ -33,7 +33,7 @@ jobs:
     if: >-
       github.event_name == 'delete' &&
       github.event.ref_type == 'branch' &&
-      !endsWith(github.event.ref, '/main')
+      github.event.ref != 'main'
     steps:
       - name: Destroy preview environment
         env:
