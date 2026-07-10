@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/mock-contract.schema.json
+uses: acme-corp/enterprise-actions/.github/actions/db-migrate@main
+description: Mock contract for the containerized database migration action
+inputs:
+  database-url:
+    description: PostgreSQL connection string for the target database
+    required: true
+  direction:
+    description: Migration direction (up or down)
+    required: false
+    default: up
+  dry-run:
+    description: Whether to simulate without applying changes
+    required: false
+    default: 'false'
+outputs:
+  applied-count: '3'
+  current-version: '2025.05.21'

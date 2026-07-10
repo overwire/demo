@@ -45,21 +45,14 @@ jobs:
           echo "DATABASE_URL=postgresql://test:${DB_PASS}@postgres:5432/acme_test" >> "$GITHUB_ENV"
           echo "REDIS_URL=redis://redis:6379" >> "$GITHUB_ENV"
 
-      - name: Add project tools to PATH
-        run: |
-          mkdir -p "$HOME/.local/bin"
-          echo '#!/bin/sh' > "$HOME/.local/bin/acme-migrate"
-          echo 'echo "acme-migrate: $@"' >> "$HOME/.local/bin/acme-migrate"
-          chmod +x "$HOME/.local/bin/acme-migrate"
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
       - name: Run migrations
-        run: |
-          echo "Connecting to $DATABASE_URL"
-          acme-migrate up
+        id: migrate
+        uses: acme-corp/enterprise-actions/.github/actions/db-migrate@main
+        with:
+          database-url: ${{ env.DATABASE_URL }}
 
       - name: Integration tests
         timeout-minutes: 15
@@ -79,3 +72,4 @@ jobs:
           echo "| Redis | redis:7-alpine | 6379 |" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "Container: \`node:20-bookworm\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Migrations applied: ${{ steps.migrate.outputs.applied-count }} (schema ${{ steps.migrate.outputs.current-version }})" >> "$GITHUB_STEP_SUMMARY"

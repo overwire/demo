@@ -117,7 +117,7 @@ multi-repo-demo/
 
 **Dynamic matrix.** Trigger `workflow_dispatch`. The discover job emits a JSON array via `GITHUB_OUTPUT`; the test job uses `fromJSON(needs.discover.outputs.packages)` as the matrix value.
 
-**Integration test.** Trigger `pull_request` with paths filter. Runs inside a `node:20-bookworm` container with PostgreSQL and Redis services. Demonstrates `services:` with env/ports/health-checks, `GITHUB_ENV`/`GITHUB_PATH` propagation, and `secrets.*` in service configuration.
+**Integration test.** Trigger `pull_request` with paths filter. Runs inside a `node:20-bookworm` container with PostgreSQL and Redis services, and applies schema migrations with the cross-repo `db-migrate` Docker container action from `enterprise-actions`. Demonstrates `services:` with env/ports/health-checks, `GITHUB_ENV` propagation (including into an action input), and `secrets.*` in service configuration.
 
 **Release publish.** Trigger on `release` published. Four-job graph: validate > build > sbom > publish with cross-repo reusable workflows and environment protection.
 
