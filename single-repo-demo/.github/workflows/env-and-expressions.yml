@@ -46,6 +46,14 @@ jobs:
           echo "PATH includes custom dir: $PATH"
           hello-tool
 
+      - name: Variables and secrets
+        env:
+          NODE_DEFAULT: ${{ vars.NODE_VERSION_DEFAULT }}
+          HAS_DEMO_TOKEN: ${{ secrets.DEMO_TOKEN != '' }}
+        run: |
+          echo "Configured default Node version: ${NODE_DEFAULT}"
+          echo "DEMO_TOKEN provided: ${HAS_DEMO_TOKEN}"
+
       - name: Expression summary
         env:
           ALL_FUNCTIONS: ${{ join(fromJSON('["contains","startsWith","endsWith","format","join","toJSON","hashFiles"]'), ' | ') }}

@@ -1,8 +1,6 @@
 # Local-only Overwire files — keep these out of version control.
-# The rest of this directory (variables, modes, mocks, payloads, rulesets)
-# is shareable. secrets.yml may carry literal secret values; remove this
-# rule only if you keep values out of the file.
-secrets.yml
+# secrets.yml IS tracked here (declarations only, values null) to match the
+# multi-repo demos; never commit literal secret values into it.
 secrets.enc.json
 state/
 cache/
