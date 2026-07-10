@@ -1,0 +1,74 @@
+name: Validate
+
+# This is the demo REPO's CI. The .github/workflows/ directories inside the
+# demo projects are demo fixtures — GitHub only runs workflows from this
+# root directory, so they never execute here.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+# The overwire CLI is pinned; bump deliberately when a new CLI ships and
+# re-verify the tour (see multi-repo-demo/tour.sh).
+env:
+  OVERWIRE_CLI_VERSION: 0.0.2
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install check dependencies
+        run: cd scripts && npm ci --no-audit --no-fund 2>/dev/null || npm install --no-audit --no-fund
+
+      - name: YAML parse (everything but workflow fixtures)
+        run: node scripts/check-yaml.mjs
+
+      - name: Schema-validate every .overwire doc
+        run: node scripts/check-schemas.mjs
+
+      - name: overwire validate (all five config roots)
+        run: |
+          npm install -g "overwire@${OVERWIRE_CLI_VERSION}"
+          overwire validate --config-root single-repo-demo/.overwire --json
+          for app in starter-app pipeline-app compliance-app enterprise-actions; do
+            (cd multi-repo-demo && overwire validate --config-root "${app}/.overwire" --json)
+          done
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Doc paths exist
+        run: node scripts/check-doc-paths.mjs
+
+      - name: Link check
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --no-progress './**/*.md'
+          fail: true
+
+  tour:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the overwire CLI
+        run: npm install -g "overwire@${OVERWIRE_CLI_VERSION}"
+
+      - name: Run the executable tour (mock-only, no Docker)
+        run: ./multi-repo-demo/tour.sh

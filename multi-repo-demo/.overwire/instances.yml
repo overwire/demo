@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/instances.schema.json
 - fullName: wire-corp/compliance-app
   relativePath: compliance-app
 - fullName: acme-corp/enterprise-actions

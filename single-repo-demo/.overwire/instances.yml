@@ -1,2 +1,3 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/instances.schema.json
 - fullName: local/single-repo-demo
   relativePath: .

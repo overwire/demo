@@ -2,4 +2,4 @@
 event: workflow_call
 inputs:
   working-directory: '.'
-  fail-on-warning: false
+  fail-on-warning: 'false'
