@@ -25,8 +25,10 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install check dependencies
-        run: cd scripts && npm ci --no-audit --no-fund 2>/dev/null || npm install --no-audit --no-fund
+      - name: Install check dependencies and the overwire CLI
+        run: |
+          (cd scripts && (npm ci --no-audit --no-fund 2>/dev/null || npm install --no-audit --no-fund))
+          npm install -g "overwire@${OVERWIRE_CLI_VERSION}"
 
       - name: YAML parse (everything but workflow fixtures)
         run: node scripts/check-yaml.mjs
@@ -36,7 +38,6 @@ jobs:
 
       - name: overwire validate (all five config roots)
         run: |
-          npm install -g "overwire@${OVERWIRE_CLI_VERSION}"
           overwire validate --config-root single-repo-demo/.overwire --json
           for app in starter-app pipeline-app compliance-app enterprise-actions; do
             (cd multi-repo-demo && overwire validate --config-root "${app}/.overwire" --json)
