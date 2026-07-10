@@ -149,7 +149,7 @@ multi-repo-demo/
 
 **Merge queue checks.** Trigger `merge_group`. Cross-repo reusable workflows with `secrets: inherit`, `github.event.merge_group.head_sha` context, and check-gate aggregation.
 
-**Bad practices.** Intentionally broken workflow: deprecated commands (`::set-output::`, `::set-env::`), duplicate step IDs, unpinned action ref. Exists solely as a target for `overwire lint`.
+**Bad practices.** Intentionally broken workflow: deprecated commands (`::set-output::`, `::set-env::`), duplicate step IDs, unpinned action ref, and a `runs-on: macos-latest` label the local runner can't satisfy (`unknown-runner-label`). Exists solely as a target for `overwire lint`.
 
 **Chains.** `pr-lifecycle.yml` runs CI then Compliance Gate. `scheduled-compliance.yml` runs the audit workflow.
 
@@ -164,7 +164,7 @@ The compliance-app also has `custom-properties.yml` with repository metadata (te
 
 ## Known caveats
 
-- **Default mode is mock** for most workflows so the demo runs without Docker or network. Flip individual steps to `live` from the editor mode chip for real execution.
+- **Default mode is mock everywhere** so the whole demo runs without Docker or network. Flip individual steps to `live` from the editor mode chip (or a modes file) for real execution.
 - **Live mode needs Docker + network.** `npm ci` needs the npm registry the first time, and the runner image needs Node. Keep jobs in mock if neither is available.
 
 ## License

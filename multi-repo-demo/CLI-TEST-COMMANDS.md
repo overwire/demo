@@ -249,7 +249,8 @@ overwire run starter-app/.github/workflows/env-and-expressions.yml \
 ## Recommended Order
 
 1. **Introspection + simulate** — no Docker needed, validates parsing/config
-2. **Mock runs** — workflows with all-mock modes pass without Docker
-3. **Live runs** — requires Docker; tests container execution, services, checkout
-4. **Chains** — multi-workflow orchestration
-5. **History/status** — verify run records persisted after runs complete
+2. **Runs** — every workflow defaults to mock, so all run commands pass without Docker or network
+3. **Chains** — multi-workflow orchestration
+4. **History/status** — verify run records persisted after runs complete
+
+To exercise real container execution (requires Docker + network), flip steps to `live` in a `.overwire/modes/<workflow>.yml` and add `--docker` to the run command — the integration-test services showcase is the best candidate.

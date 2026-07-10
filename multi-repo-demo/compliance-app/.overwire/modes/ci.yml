@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=https://docs.overwire.io/schemas/modes.schema.json
 defaultMode: mock
 jobs:
-  build: live
-  security: live
+  build: mock
+  security: mock
   audit: skip
   post-checks: mock
 steps:

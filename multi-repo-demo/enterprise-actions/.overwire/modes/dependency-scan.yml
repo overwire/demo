@@ -3,8 +3,8 @@ defaultMode: mock
 jobs:
   audit: mock
 steps:
-  audit.0: live
-  audit.1: live
-  audit.2: live
-  audit.3: live
-  audit.4: live
+  audit.0: mock
+  audit.1: mock
+  audit.2: mock
+  audit.3: mock
+  audit.4: mock

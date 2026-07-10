@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=https://docs.overwire.io/schemas/modes.schema.json
-defaultMode: live
+defaultMode: mock
 jobs:
-  check: live
+  check: mock
 steps:
-  check.0: live
-  check.1: live
-  check.2: live
-  check.3: live
-  check.4: live
+  check.0: mock
+  check.1: mock
+  check.2: mock
+  check.3: mock
+  check.4: mock

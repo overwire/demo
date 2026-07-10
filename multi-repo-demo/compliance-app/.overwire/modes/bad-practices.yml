@@ -1,10 +1,10 @@
 # yaml-language-server: $schema=https://docs.overwire.io/schemas/modes.schema.json
-defaultMode: live
+defaultMode: mock
 jobs:
-  deprecated-commands: live
+  deprecated-commands: mock
 steps:
-  deprecated-commands.0: live
-  deprecated-commands.1: live
-  deprecated-commands.2: live
-  deprecated-commands.3: live
-  deprecated-commands.4: live
+  deprecated-commands.0: mock
+  deprecated-commands.1: mock
+  deprecated-commands.2: mock
+  deprecated-commands.3: mock
+  deprecated-commands.4: mock

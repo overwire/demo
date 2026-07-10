@@ -3,7 +3,7 @@ defaultMode: mock
 jobs:
   codeql: mock
 steps:
-  codeql.0: live
-  codeql.1: live
-  codeql.2: live
+  codeql.0: mock
+  codeql.1: mock
+  codeql.2: mock
   codeql.3: mock

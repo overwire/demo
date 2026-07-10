@@ -3,8 +3,8 @@ defaultMode: mock
 jobs:
   evaluate: mock
 steps:
-  evaluate.0: live
-  evaluate.1: live
-  evaluate.2: live
-  evaluate.3: live
-  evaluate.4: live
+  evaluate.0: mock
+  evaluate.1: mock
+  evaluate.2: mock
+  evaluate.3: mock
+  evaluate.4: mock
