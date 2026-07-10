@@ -37,11 +37,9 @@ jobs:
         run: node scripts/check-schemas.mjs
 
       - name: overwire validate (all five config roots)
-        run: |
-          overwire validate --config-root single-repo-demo/.overwire --json
-          for app in starter-app pipeline-app compliance-app enterprise-actions; do
-            (cd multi-repo-demo && overwire validate --config-root "${app}/.overwire" --json)
-          done
+        # bad-practices.yml is documented lint bait — its error findings are
+        # required; errors anywhere else fail (see the script).
+        run: node scripts/check-overwire-validate.mjs
 
   docs:
     runs-on: ubuntu-latest
