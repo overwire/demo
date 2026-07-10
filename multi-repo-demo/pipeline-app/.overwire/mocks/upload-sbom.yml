@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://docs.overwire.io/schemas/mock-contract.schema.json
+stepId: upload-sbom
+description: |
+  Registers the SBOM document in the run's artifact store when the upload
+  step is mocked, so the artifacts list shows a real CycloneDX file and a
+  downstream actions/download-artifact step can restore it.
+artifacts:
+  - name: sbom
+    files:
+      - path: sbom.json
+        fromFile: fixtures/sbom.cyclonedx.json

@@ -39,9 +39,10 @@ jobs:
 
   sbom:
     needs: build
+    # The artifact keeps generate-sbom's default name (`sbom`): the upload
+    # mock contract declares its materialized artifact by literal name, so
+    # producer, contract, and the download below must all agree on it.
     uses: acme-corp/enterprise-actions/.github/workflows/generate-sbom.yml@main
-    with:
-      artifact-name: release-sbom
 
   publish:
     runs-on: ubuntu-latest
@@ -53,7 +54,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: release-sbom
+          name: sbom
 
       - name: Publish package
         env:
